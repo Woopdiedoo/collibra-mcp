@@ -15,7 +15,7 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
 ### Prerequisites
 
 - Access to a Collibra Data Governance Center instance
-- Valid Collibra credentials
+- Valid Collibra credentials (can be provided via server config or client requests)
 
 ### Installation
 
@@ -55,11 +55,23 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
 
 ## Running and Configuration
 
-The simplest way to get started is with environment variables:
+### Authentication Options
+
+The server supports two authentication approaches:
+
+#### Option 1: Server-wide Authentication
+When running over the stdio transport, configure credentials at the server level - all requests use the same credentials:
 ```bash
 export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
 export COLLIBRA_MCP_API_USR="your-username"
 export COLLIBRA_MCP_API_PWD="your-password"
+./mcp-server
+```
+
+#### Option 2: Client-provided Authentication
+When running over the http transport, it is recommended that MCP clients provide their own Basic Auth headers for each request:
+```bash
+export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
 ./mcp-server
 ```
 
