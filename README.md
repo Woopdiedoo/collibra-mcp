@@ -75,7 +75,7 @@ export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
 ./mcp-server
 ```
 
-**For detailed configuration instructions, see [CONFIG.md](config/CONFIG.md).**
+**For detailed configuration instructions, see [CONFIG.md](docs/CONFIG.md).**
 
 ## Security Considerations
 
