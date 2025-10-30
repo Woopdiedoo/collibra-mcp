@@ -14,8 +14,6 @@ import (
 
 func main() {
 	config := chip.Init()
-	client := chip.NewCollibraClient(config)
-	clientFactory := newCollibraClientFactory(config, client)
 
 	log.Printf("Starting Collibra MCP server (version: %s)...\n", chip.Version)
 
@@ -27,12 +25,18 @@ func main() {
 		log.Println("Warning: using a single basic auth header for all requests is not recommended as it will result in all actions being attributed to the same account. Consider setting an appropriate basic auth header for each request.")
 	}
 
+	client := &http.Client{
+		Transport: &collibraClient{
+			config: config,
+			next:   chip.NewCollibraClient(config),
+		},
+	}
 	server := chip.NewMcpServer()
-	chip.RegisterMcpTool(server, tools.NewAskDadTool(), clientFactory)
-	chip.RegisterMcpTool(server, tools.NewAskGlossaryTool(), clientFactory)
-	chip.RegisterMcpTool(server, tools.NewAssetDetailsTool(), clientFactory)
-	chip.RegisterMcpTool(server, tools.NewKeywordSearchTool(), clientFactory)
-	chip.RegisterMcpTool(server, tools.NewFindDataClassesTool(), clientFactory)
+	chip.RegisterMcpTool(server, tools.NewAskDadTool(), client)
+	chip.RegisterMcpTool(server, tools.NewAskGlossaryTool(), client)
+	chip.RegisterMcpTool(server, tools.NewAssetDetailsTool(), client)
+	chip.RegisterMcpTool(server, tools.NewKeywordSearchTool(), client)
+	chip.RegisterMcpTool(server, tools.NewFindDataClassesTool(), client)
 
 	if config.Mcp.Mode == "stdio" {
 		runStdioServer(server)
