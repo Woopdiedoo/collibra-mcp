@@ -39,6 +39,7 @@ func main() {
 	chip.RegisterMcpTool(server, tools.NewFindDataClassesTool(), client)
 	chip.RegisterMcpTool(server, tools.NewListAssetTypesTool(), client)
 	chip.RegisterMcpTool(server, tools.NewListDataContractsTool(), client)
+	chip.RegisterMcpTool(server, tools.NewPullDataContractManifestTool(), client)
 
 	if config.Mcp.Mode == "stdio" {
 		runStdioServer(server)
