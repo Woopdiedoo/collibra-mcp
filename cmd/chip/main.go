@@ -25,12 +25,7 @@ func main() {
 		log.Println("Warning: using a single basic auth header for all requests is not recommended as it will result in all actions being attributed to the same account. Consider setting an appropriate basic auth header for each request.")
 	}
 
-	client := &http.Client{
-		Transport: &collibraClient{
-			config: config,
-			next:   chip.NewCollibraClient(config),
-		},
-	}
+	client := newCollibraClient(config)
 	server := chip.NewMcpServer()
 	toolConfig := &chip.ToolConfig{
 		CollibraUrl: config.Api.Url,

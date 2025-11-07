@@ -1,10 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"path"
+	"time"
 
 	chip "github.com/collibra/chip/app"
 )
@@ -12,6 +16,40 @@ import (
 type collibraClient struct {
 	config *chip.Config
 	next   http.RoundTripper
+}
+
+func newCollibraClient(config *chip.Config) *http.Client {
+	baseTransport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   60 * time.Second,
+			KeepAlive: 60 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 10 * time.Second,
+	}
+
+	if config.Api.SkipTLSVerify {
+		log.Println("Warning: skipping TLS certificate verification for ", config.Api.Url)
+		baseTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: config.Api.SkipTLSVerify}
+	}
+
+	if config.Api.Proxy != "" {
+		proxyURL, err := url.Parse(config.Api.Proxy)
+		if err != nil {
+			log.Fatal("Invalid proxy URL:", err)
+		}
+		log.Println("Using proxy URL:", proxyURL)
+		baseTransport.Proxy = http.ProxyURL(proxyURL)
+	}
+
+	return &http.Client{
+		Transport: &collibraClient{
+			next: chip.NewCollibraClient(baseTransport),
+		},
+	}
 }
 
 func (c *collibraClient) RoundTrip(request *http.Request) (*http.Response, error) {
