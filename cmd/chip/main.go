@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	config := chip.Init()
+	config := Init()
 
 	log.Printf("Starting Collibra MCP server (version: %s)...\n", chip.Version)
 

@@ -14,11 +14,11 @@ import (
 )
 
 type collibraClient struct {
-	config *chip.Config
+	config *Config
 	next   http.RoundTripper
 }
 
-func newCollibraClient(config *chip.Config) *http.Client {
+func newCollibraClient(config *Config) *http.Client {
 	baseTransport := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   60 * time.Second,
