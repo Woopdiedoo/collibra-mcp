@@ -71,7 +71,7 @@ func runHttpServer(mode string, server *mcp.Server, port int) {
 		log.Println("Using SSE http handler")
 		handler = mcp.NewSSEHandler(func(req *http.Request) *mcp.Server {
 			return server
-		})
+		}, &mcp.SSEOptions{})
 	default:
 		log.Fatalf("Invalid HTTP mode: %s (must be 'http', 'http-sse' or 'http-streamable')", mode)
 	}
