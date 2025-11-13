@@ -23,11 +23,8 @@ type RemoveClassificationMatchOutput struct {
 func NewRemoveClassificationMatchTool() *chip.CollibraTool[RemoveClassificationMatchInput, RemoveClassificationMatchOutput] {
 	return &chip.CollibraTool[RemoveClassificationMatchInput, RemoveClassificationMatchOutput]{
 		Tool: &mcp.Tool{
-			Name: "removeClassificationMatch",
-			Description: "Remove a classification match (association between a data class and an asset) from Collibra. " +
-				"Use this when the user wants to 'remove a classification', 'delete a classification match', " +
-				"'unclassify an asset', or 'remove a data class from an asset'. " +
-				"You need the UUID for the classification match that needs to be removed.",
+			Name:        "remove_classification_match",
+			Description: "Remove a classification match (association between a data class and an asset) from Collibra. Requires the UUID of the classification match to remove.",
 		},
 		ToolHandler: handleRemoveClassificationMatch,
 	}

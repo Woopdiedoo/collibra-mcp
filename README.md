@@ -4,18 +4,33 @@ A Model Context Protocol (MCP) server that provides AI agents with access to Col
 
 ## Overview
 
-This Go-based MCP server acts as a bridge between AI applications and Collibra, enabling intelligent data discovery and governance operations through three main tools:
+This Go-based MCP server acts as a bridge between AI applications and Collibra, enabling intelligent data discovery and governance operations through the following tools:
 
-- **Data Asset Discovery**: Query available data assets using natural language
-- **Business Glossary**: Ask questions about terms and definitions in your business glossary  
-- **Asset Details**: Retrieve comprehensive information about specific assets by UUID
+**Discovery & Search**
+- [`discover_data_assets`](pkg/tools/ask_dad.go) - Query available data assets using natural language
+- [`discover_business_glossary`](pkg/tools/ask_glossary.go) - Ask questions about terms and definitions
+- [`search_keyword`](pkg/tools/keyword_search.go) - Wildcard keyword search for assets
+- [`search_data_classes`](pkg/tools/find_data_classes.go) - Search for data classes with filters
+- [`find_classification_matches`](pkg/tools/find_classification_matches.go) - Find associations between data classes and assets
+
+**Asset Management**
+- [`get_asset_details`](pkg/tools/get_asset_details.go) - Retrieve detailed information about specific assets by UUID
+- [`list_asset_types`](pkg/tools/list_asset_types.go) - List available asset types
+
+**Classification**
+- [`add_classification_match`](pkg/tools/add_classification_match.go) - Associate a data class with an asset
+- [`remove_classification_match`](pkg/tools/remove_classification_match.go) - Remove a classification match
+
+**Data Contracts**
+- [`list_data_contracts`](pkg/tools/list_data_contracts.go) - List data contracts with pagination
+- [`pull_data_contract_manifest`](pkg/tools/pull_data_contract_manifest.go) - Download manifest for a data contract
 
 ## Quick Start
 
 ### Prerequisites
 
 - Access to a Collibra Data Governance Center instance
-- Valid Collibra credentials (can be provided via server config or client requests)
+- Valid Collibra credentials
 
 ### Installation
 
@@ -50,23 +65,27 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
    git clone <repository-url>
    cd ai-mcp-discovery
    go mod download
-   go build cmd/chip
+   go build -o .build/chip ./cmd/chip
    ```
 
 ## Running and Configuration
 
 ### Authentication Options
 
-The server supports two authentication approaches:
+The server supports two authentication approaches, either configured through environment variables or a configuration file
 
 #### Option 1: Server-wide Authentication
 When running over the stdio transport, configure credentials at the server level - all requests use the same credentials:
-```bash
-export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
-export COLLIBRA_MCP_API_USR="your-username"
-export COLLIBRA_MCP_API_PWD="your-password"
-./mcp-server
+
+```yaml
+# ~/.config/collibra/mcp.yaml
+api:
+  url: "https://your-collibra-instance.com"
+  username: "your-username"
+  password: "your-password"
 ```
+
+The same options can be configured through the respective environment variables COLLIBRA_MCP_API_URL, COLLIBRA_MCP_API_USR and COLLIBRA_MCP_API_PWD.
 
 #### Option 2: Client-provided Authentication
 When running over the http transport, it is recommended that MCP clients provide their own Basic Auth headers for each request:
@@ -88,25 +107,24 @@ export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
 
 This server is compatible with any MCP client. Refer to your MCP client's documentation for server configuration. 
 
-Here's how to integrate with Claude desktop or VSCode assuming you have exported your credentials:
+Here's how to integrate with some popular clients assuming you have a configuration file setup:
 
-### Claude Desktop
-Add to your Claude Desktop configuration:
+* Claude desktop
 ```json
+// ~/Library/Application Support/Claude/claude_desktop_config.json
 {
   "mcpServers": {
     "collibra": {
       "type": "stdio",
-      "command": "/path/to/mcp-server"
+      "command": "/path/to/chip-..."
     }
   }
 }
 ```
 
-### VS Code
-For VS Code with MCP extensions, add the server to `.vscode/mcp.json` in your workspace:
-
+* VS Code
 ```json
+// .vscode/mcp.json
 {
     "servers": {
         "collibra": {
@@ -114,6 +132,18 @@ For VS Code with MCP extensions, add the server to `.vscode/mcp.json` in your wo
             "command": "./chip"
         }
     }
+}
+```
+
+* Gemini-cli
+```json
+// ~/.gemini/settings.json
+{
+  "mcpServers": {
+    "collibra": {
+      "command": "/path/to/chip-..."
+    }
+  }
 }
 ```
 

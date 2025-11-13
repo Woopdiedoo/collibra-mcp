@@ -20,8 +20,8 @@ type AskGlossaryOutput struct {
 func NewAskGlossaryTool() *chip.CollibraTool[AskGlossaryInput, AskGlossaryOutput] {
 	return &chip.CollibraTool[AskGlossaryInput, AskGlossaryOutput]{
 		Tool: &mcp.Tool{
-			Name:        "askGlossary",
-			Description: "Ask the business glossary agent questions about terms and definitions",
+			Name:        "discover_business_glossary",
+			Description: "Ask the business glossary agent questions about terms and definitions in Collibra.",
 		},
 		ToolHandler: handleAskGlossary,
 	}

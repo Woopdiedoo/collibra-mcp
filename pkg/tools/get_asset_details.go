@@ -28,8 +28,8 @@ type AssetDetailsOutput struct {
 func NewAssetDetailsTool() *chip.CollibraTool[AssetDetailsInput, AssetDetailsOutput] {
 	return &chip.CollibraTool[AssetDetailsInput, AssetDetailsOutput]{
 		Tool: &mcp.Tool{
-			Name:        "getAssetDetails",
-			Description: "Get detailed information about a specific asset by its UUID, including a link you can navigate to in Collibra, attributes, relations, and metadata. Returns up to 100 attributes per type (string, numeric, boolean, date). Supports cursor-based pagination for relations (50 per page). Use the last relation's target/source ID as cursor for the next page.",
+			Name:        "get_asset_details",
+			Description: "Get detailed information about a specific asset by its UUID, including attributes, relations, and metadata. Returns up to 100 attributes per type and supports cursor-based pagination for relations (50 per page).",
 		},
 		ToolHandler: handleAssetDetails,
 	}

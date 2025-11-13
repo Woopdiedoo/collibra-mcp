@@ -40,8 +40,8 @@ type KeywordSearchResource struct {
 func NewKeywordSearchTool() *chip.CollibraTool[KeywordSearchInput, KeywordSearchOutput] {
 	return &chip.CollibraTool[KeywordSearchInput, KeywordSearchOutput]{
 		Tool: &mcp.Tool{
-			Name:        "keywordSearch",
-			Description: "Perform a wildcard keyword search for asset names in the Collibra knowledge graph.",
+			Name:        "search_keyword",
+			Description: "Perform a wildcard keyword search for assets in the Collibra knowledge graph. Supports filtering by resource type, community, domain, asset type, status, and creator.",
 		},
 		ToolHandler: handleKeywordSearch,
 	}

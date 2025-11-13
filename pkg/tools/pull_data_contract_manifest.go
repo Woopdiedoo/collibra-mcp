@@ -24,7 +24,7 @@ type PullDataContractManifestOutput struct {
 func NewPullDataContractManifestTool() *chip.CollibraTool[PullDataContractManifestInput, PullDataContractManifestOutput] {
 	return &chip.CollibraTool[PullDataContractManifestInput, PullDataContractManifestOutput]{
 		Tool: &mcp.Tool{
-			Name:        "pullDataContractManifest",
+			Name:        "pull_data_contract_manifest",
 			Description: "Download the manifest file for the currently active version of a specific data contract. Returns the manifest content as a string.",
 		},
 		ToolHandler: handlePullDataContractManifest,

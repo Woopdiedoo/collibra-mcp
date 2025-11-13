@@ -58,7 +58,7 @@ type AddDataClassRequest struct {
 	Examples            []string `json:"examples,omitempty"`
 }
 
-func FindDataClasses(ctx context.Context, collibraHttpClient *http.Client, params DataClassQueryParams) ([]DataClass, int, error) {
+func SearchDataClasses(ctx context.Context, collibraHttpClient *http.Client, params DataClassQueryParams) ([]DataClass, int, error) {
 	endpoint, err := dataClassesEndpoint(params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to build endpoint: %w", err)

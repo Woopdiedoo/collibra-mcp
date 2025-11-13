@@ -20,7 +20,7 @@ func TestFindDataClasses(t *testing.T) {
 	defer server.Close()
 
 	client := newClient(server)
-	output, err := tools.NewFindDataClassesTool().ToolHandler(t.Context(), client, tools.FindDataClassesInput{
+	output, err := tools.NewSearchDataClassesTool().ToolHandler(t.Context(), client, tools.SearchDataClassesInput{
 		Name: "Question",
 	})
 	if err != nil {

@@ -29,8 +29,8 @@ type FindClassificationMatchesOutput struct {
 func NewFindClassificationMatchesTool() *chip.CollibraTool[FindClassificationMatchesInput, FindClassificationMatchesOutput] {
 	return &chip.CollibraTool[FindClassificationMatchesInput, FindClassificationMatchesOutput]{
 		Tool: &mcp.Tool{
-			Name:        "findClassificationMatches",
-			Description: "Find classification matches (associations between data classes and assets). Use this when user asks about assets related to data classes, or to find which classifications are applied to specific assets. Supports filtering by COLUMN asset IDs (i.e. assets of type 00000000-0000-0000-0000-000000031008), statuses (ACCEPTED/REJECTED/SUGGESTED), classification IDs, and asset type IDs.",
+			Name:        "find_classification_matches",
+			Description: "Find classification matches (associations between data classes and assets) in Collibra. Supports filtering by asset IDs, statuses (ACCEPTED/REJECTED/SUGGESTED), classification IDs, and asset type IDs.",
 		},
 		ToolHandler: handleFindClassificationMatches,
 	}
