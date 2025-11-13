@@ -11,11 +11,11 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-type AddClassificationMatchRequest struct {
+type AddDataClassificationMatchRequest struct {
 	AssetID          string `json:"assetId"`
 	ClassificationID string `json:"classificationId"`
 }
-type ClassificationMatch struct {
+type DataClassificationMatch struct {
 	ID             string                 `json:"id"`
 	CreatedBy      string                 `json:"createdBy"`
 	CreatedOn      int64                  `json:"createdOn"`
@@ -26,7 +26,7 @@ type ClassificationMatch struct {
 	Status         string                 `json:"status"`
 	Confidence     float64                `json:"confidence"`
 	Asset          NamedResourceReference `json:"asset"`
-	Classification Classification         `json:"classification"`
+	Classification DataClassification     `json:"classification"`
 }
 type NamedResourceReference struct {
 	ID                    string `json:"id"`
@@ -34,11 +34,11 @@ type NamedResourceReference struct {
 	ResourceDiscriminator string `json:"resourceDiscriminator,omitempty"`
 	Name                  string `json:"name"`
 }
-type Classification struct {
+type DataClassification struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
-type ClassificationMatchQueryParams struct {
+type DataClassificationMatchQueryParams struct {
 	Offset            *int     `url:"offset,omitempty"`
 	Limit             *int     `url:"limit,omitempty"`
 	CountLimit        *int     `url:"countLimit,omitempty"`
@@ -47,14 +47,14 @@ type ClassificationMatchQueryParams struct {
 	ClassificationIDs []string `url:"classificationIds,omitempty"`
 	AssetTypeIDs      []string `url:"assetTypeIds,omitempty"`
 }
-type PagedResponseClassificationMatch struct {
-	Total   int64                 `json:"total"`
-	Offset  int64                 `json:"offset"`
-	Limit   int64                 `json:"limit"`
-	Results []ClassificationMatch `json:"results"`
+type PagedResponseDataClassificationMatch struct {
+	Total   int64                     `json:"total"`
+	Offset  int64                     `json:"offset"`
+	Limit   int64                     `json:"limit"`
+	Results []DataClassificationMatch `json:"results"`
 }
 
-func AddClassificationMatch(ctx context.Context, httpClient *http.Client, request AddClassificationMatchRequest) (*ClassificationMatch, error) {
+func AddDataClassificationMatch(ctx context.Context, httpClient *http.Client, request AddDataClassificationMatchRequest) (*DataClassificationMatch, error) {
 	endpoint := "/rest/catalog/1.0/dataClassification/classificationMatches"
 
 	jsonData, err := json.Marshal(request)
@@ -93,7 +93,7 @@ func AddClassificationMatch(ctx context.Context, httpClient *http.Client, reques
 		return nil, fmt.Errorf("http %d: %s", resp.StatusCode, string(body))
 	}
 
-	var match ClassificationMatch
+	var match DataClassificationMatch
 	if err := json.Unmarshal(body, &match); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
@@ -101,7 +101,7 @@ func AddClassificationMatch(ctx context.Context, httpClient *http.Client, reques
 	return &match, nil
 }
 
-func SearchClassificationMatches(ctx context.Context, httpClient *http.Client, params ClassificationMatchQueryParams) ([]ClassificationMatch, int64, error) {
+func SearchDataClassificationMatches(ctx context.Context, httpClient *http.Client, params DataClassificationMatchQueryParams) ([]DataClassificationMatch, int64, error) {
 	endpoint := "/rest/catalog/1.0/dataClassification/classificationMatches/bulk"
 	values, err := query.Values(params)
 	if err != nil {
@@ -133,7 +133,7 @@ func SearchClassificationMatches(ctx context.Context, httpClient *http.Client, p
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return nil, 0, fmt.Errorf("http %d: %s", resp.StatusCode, string(body))
 	}
-	var pagedResponse PagedResponseClassificationMatch
+	var pagedResponse PagedResponseDataClassificationMatch
 
 	if err := json.Unmarshal(body, &pagedResponse); err != nil {
 		return nil, 0, fmt.Errorf("failed to parse response: %w", err)
@@ -141,7 +141,7 @@ func SearchClassificationMatches(ctx context.Context, httpClient *http.Client, p
 	return pagedResponse.Results, pagedResponse.Total, nil
 }
 
-func RemoveClassificationMatch(ctx context.Context, httpClient *http.Client, classificationMatchID string) error {
+func RemoveDataClassificationMatch(ctx context.Context, httpClient *http.Client, classificationMatchID string) error {
 	// REF: https://developer.collibra.com/api/rest/catalog-classification#/operations/removeClassificationMatch
 	endpoint := fmt.Sprintf("/rest/catalog/1.0/dataClassification/classificationMatches/%s", classificationMatchID)
 

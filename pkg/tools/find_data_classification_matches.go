@@ -20,16 +20,16 @@ type SearchClassificationMatchesInput struct {
 }
 
 type SearchClassificationMatchesOutput struct {
-	Total                 int                           `json:"total" jsonschema:"Total number of matching classification matches"`
-	Count                 int                           `json:"count" jsonschema:"Number of classification matches returned in this response"`
-	ClassificationMatches []clients.ClassificationMatch `json:"classificationMatches" jsonschema:"List of classification matches"`
-	Error                 string                        `json:"error,omitempty" jsonschema:"HTTP or other error message if the request failed"`
+	Total                 int                               `json:"total" jsonschema:"Total number of matching classification matches"`
+	Count                 int                               `json:"count" jsonschema:"Number of classification matches returned in this response"`
+	ClassificationMatches []clients.DataClassificationMatch `json:"classificationMatches" jsonschema:"List of classification matches"`
+	Error                 string                            `json:"error,omitempty" jsonschema:"HTTP or other error message if the request failed"`
 }
 
 func NewSearchClassificationMatchesTool() *chip.CollibraTool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput] {
 	return &chip.CollibraTool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput]{
 		Tool: &mcp.Tool{
-			Name:        "classification_match_search",
+			Name:        "data_classification_match_search",
 			Description: "Search for classification matches (associations between data classes and assets) in Collibra. Supports filtering by asset IDs, statuses (ACCEPTED/REJECTED/SUGGESTED), classification IDs, and asset type IDs.",
 		},
 		ToolHandler: handleSearchClassificationMatches,
@@ -40,7 +40,7 @@ func handleSearchClassificationMatches(ctx context.Context, collibraHttpClient *
 	input.sanitizePagination()
 
 	params := buildClassificationMatchQueryParams(input)
-	results, total, err := clients.SearchClassificationMatches(ctx, collibraHttpClient, params)
+	results, total, err := clients.SearchDataClassificationMatches(ctx, collibraHttpClient, params)
 	if err != nil {
 		return SearchClassificationMatchesOutput{Error: err.Error(), Total: int(total), Count: 0, ClassificationMatches: results}, nil
 	}
@@ -64,8 +64,8 @@ func (in *SearchClassificationMatchesInput) sanitizePagination() {
 	}
 }
 
-func buildClassificationMatchQueryParams(in SearchClassificationMatchesInput) clients.ClassificationMatchQueryParams {
-	params := clients.ClassificationMatchQueryParams{
+func buildClassificationMatchQueryParams(in SearchClassificationMatchesInput) clients.DataClassificationMatchQueryParams {
+	params := clients.DataClassificationMatchQueryParams{
 		AssetIDs:          in.AssetIDs,
 		Statuses:          in.Statuses,
 		ClassificationIDs: in.ClassificationIDs,

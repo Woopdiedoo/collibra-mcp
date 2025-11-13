@@ -44,7 +44,7 @@ func TestAddClassificationMatch_Success(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := AddClassificationMatchInput{
+	input := AddDataClassificationMatchInput{
 		AssetID:          "9179b887-04ef-4ce5-ab3a-b5bbd39ea3c8",
 		ClassificationID: "be45c001-b173-48ff-ac91-3f6e45868c8b",
 	}
@@ -80,7 +80,7 @@ func TestAddClassificationMatch_Success(t *testing.T) {
 func TestAddClassificationMatch_MissingAssetID(t *testing.T) {
 	client := &http.Client{}
 
-	input := AddClassificationMatchInput{
+	input := AddDataClassificationMatchInput{
 		ClassificationID: "be45c001-b173-48ff-ac91-3f6e45868c8b",
 	}
 
@@ -103,7 +103,7 @@ func TestAddClassificationMatch_MissingAssetID(t *testing.T) {
 func TestAddClassificationMatch_MissingClassificationID(t *testing.T) {
 	client := &http.Client{}
 
-	input := AddClassificationMatchInput{
+	input := AddDataClassificationMatchInput{
 		AssetID: "9179b887-04ef-4ce5-ab3a-b5bbd39ea3c8",
 	}
 
@@ -137,7 +137,7 @@ func TestAddClassificationMatch_AssetNotFound(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := AddClassificationMatchInput{
+	input := AddDataClassificationMatchInput{
 		AssetID:          "00000000-0000-0000-0000-000000000000",
 		ClassificationID: "be45c001-b173-48ff-ac91-3f6e45868c8b",
 	}
@@ -172,7 +172,7 @@ func TestAddClassificationMatch_AlreadyExists(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := AddClassificationMatchInput{
+	input := AddDataClassificationMatchInput{
 		AssetID:          "9179b887-04ef-4ce5-ab3a-b5bbd39ea3c8",
 		ClassificationID: "be45c001-b173-48ff-ac91-3f6e45868c8b",
 	}

@@ -11,12 +11,12 @@ import (
 
 func TestFindClassificationMatches(t *testing.T) {
 	server := httptest.NewServer(&testServer{
-		"/rest/catalog/1.0/dataClassification/classificationMatches/bulk": JsonHandlerOut(func(httpRequest *http.Request) clients.PagedResponseClassificationMatch {
-			return clients.PagedResponseClassificationMatch{
+		"/rest/catalog/1.0/dataClassification/classificationMatches/bulk": JsonHandlerOut(func(httpRequest *http.Request) clients.PagedResponseDataClassificationMatch {
+			return clients.PagedResponseDataClassificationMatch{
 				Total:  1,
 				Offset: 0,
 				Limit:  50,
-				Results: []clients.ClassificationMatch{
+				Results: []clients.DataClassificationMatch{
 					{
 						ID:     "test-match-id",
 						Status: "ACCEPTED",
@@ -24,7 +24,7 @@ func TestFindClassificationMatches(t *testing.T) {
 							ID:   "asset-id",
 							Name: "Test Asset",
 						},
-						Classification: clients.Classification{
+						Classification: clients.DataClassification{
 							ID:   "classification-id",
 							Name: "Test Classification",
 						},

@@ -24,12 +24,12 @@ func TestRemoveClassificationMatch_Success(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := RemoveClassificationMatchInput{
+	input := RemoveDataClassificationMatchInput{
 		ClassificationMatchID: "12345678-1234-1234-1234-123456789abc",
 	}
 
 	ctx := context.Background()
-	output, err := handleRemoveClassificationMatch(ctx, client, input)
+	output, err := handleRemoveDataClassificationMatch(ctx, client, input)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
@@ -43,10 +43,10 @@ func TestRemoveClassificationMatch_Success(t *testing.T) {
 func TestRemoveClassificationMatch_MissingClassificationMatchID(t *testing.T) {
 	client := &http.Client{}
 
-	input := RemoveClassificationMatchInput{}
+	input := RemoveDataClassificationMatchInput{}
 
 	ctx := context.Background()
-	output, err := handleRemoveClassificationMatch(ctx, client, input)
+	output, err := handleRemoveDataClassificationMatch(ctx, client, input)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
@@ -71,12 +71,12 @@ func TestRemoveClassificationMatch_NotFound(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := RemoveClassificationMatchInput{
+	input := RemoveDataClassificationMatchInput{
 		ClassificationMatchID: "00000000-0000-0000-0000-000000000000",
 	}
 
 	ctx := context.Background()
-	output, err := handleRemoveClassificationMatch(ctx, client, input)
+	output, err := handleRemoveDataClassificationMatch(ctx, client, input)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
@@ -105,12 +105,12 @@ func TestRemoveClassificationMatch_ServerError(t *testing.T) {
 		Transport: &classificationMatchMockTransport{baseURL: server.URL},
 	}
 
-	input := RemoveClassificationMatchInput{
+	input := RemoveDataClassificationMatchInput{
 		ClassificationMatchID: "12345678-1234-1234-1234-123456789abc",
 	}
 
 	ctx := context.Background()
-	output, err := handleRemoveClassificationMatch(ctx, client, input)
+	output, err := handleRemoveDataClassificationMatch(ctx, client, input)
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
