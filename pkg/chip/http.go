@@ -12,7 +12,10 @@ type CollibraClient struct {
 
 func (c *CollibraClient) RoundTrip(request *http.Request) (*http.Response, error) {
 	reqClone := request.Clone(request.Context())
-	reqClone.Header.Set("Content-Type", "application/json")
+	if reqClone.Header.Get("Content-Type") == "" {
+		// If not set, default to application/json, but avoid overriding if it's already set.
+		reqClone.Header.Set("Content-Type", "application/json")
+	}
 	reqClone.Header.Set("User-Agent", "Collibra MCP/"+Version)
 	// TODO: Remove the need for X-Thread-Id header
 	reqClone.Header.Set("X-Thread-Id", uuid.New().String())

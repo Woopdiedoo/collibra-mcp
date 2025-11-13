@@ -80,20 +80,16 @@ func CreateAddFromManifestRequest(req PushDataContractManifestRequest) (*bytes.B
 		}
 	}
 
-	forceValue := "false"
 	if req.Force {
-		forceValue = "true"
-	}
-	if err := writer.WriteField("force", forceValue); err != nil {
-		return nil, "", fmt.Errorf("failed to write force field: %w", err)
+		if err := writer.WriteField("force", "true"); err != nil {
+			return nil, "", fmt.Errorf("failed to write force field: %w", err)
+		}
 	}
 
-	activeValue := "true" // default to true
-	if !req.Active {
-		activeValue = "false"
-	}
-	if err := writer.WriteField("active", activeValue); err != nil {
-		return nil, "", fmt.Errorf("failed to write active field: %w", err)
+	if req.Active {
+		if err := writer.WriteField("active", "true"); err != nil {
+			return nil, "", fmt.Errorf("failed to write active field: %w", err)
+		}
 	}
 
 	if err := writer.Close(); err != nil {

@@ -126,8 +126,9 @@ title: Another Data Contract`
 				return
 			}
 
-			if r.FormValue("active") != "false" {
-				http.Error(w, "Expected active 'false'", http.StatusBadRequest)
+			// active field should not be present when Active is false (implementation only sends it when true)
+			if r.FormValue("active") != "" {
+				http.Error(w, "Expected active field to be absent when false", http.StatusBadRequest)
 				return
 			}
 
