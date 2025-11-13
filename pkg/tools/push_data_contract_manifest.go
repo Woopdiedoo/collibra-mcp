@@ -29,8 +29,8 @@ type PushDataContractManifestOutput struct {
 func NewPushDataContractManifestTool() *chip.CollibraTool[PushDataContractManifestInput, PushDataContractManifestOutput] {
 	return &chip.CollibraTool[PushDataContractManifestInput, PushDataContractManifestOutput]{
 		Tool: &mcp.Tool{
-			Name:        "pushDataContractManifest",
-			Description: "Uploads a new version of a Data Contract manifest, with the manifestID and version being automatically parsed from the manifest content. Use this to add to the version history of a Data Contract that has already been initialized and exists within Collibra.",
+			Name:        "push_data_contract_manifest",
+			Description: "Upload a new version of a data contract manifest to Collibra. The manifestID and version are automatically parsed from the manifest content if it adheres to the Open Data Contract Standard.",
 		},
 		ToolHandler: handlePushDataContractManifest,
 	}
