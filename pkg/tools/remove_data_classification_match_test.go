@@ -94,7 +94,7 @@ func TestRemoveClassificationMatch_NotFound(t *testing.T) {
 func TestRemoveClassificationMatch_ServerError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"statusCode": 500,
 			"message": "Internal server error"
 		}`))

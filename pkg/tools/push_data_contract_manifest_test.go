@@ -3,6 +3,7 @@ package tools_test
 import (
 	"context"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -47,7 +48,9 @@ description: This is a sample data contract manifest`
 				http.Error(w, "Missing manifest file", http.StatusBadRequest)
 				return
 			}
-			defer file.Close()
+			defer func(file multipart.File) {
+				_ = file.Close()
+			}(file)
 
 			content, err := io.ReadAll(file)
 			if err != nil {
@@ -61,7 +64,7 @@ description: This is a sample data contract manifest`
 			}
 
 			w.WriteHeader(http.StatusCreated)
-			w.Write([]byte(expectedResponse))
+			_, _ = w.Write([]byte(expectedResponse))
 		}),
 	})
 	defer server.Close()
@@ -133,7 +136,7 @@ title: Another Data Contract`
 			}
 
 			w.WriteHeader(http.StatusCreated)
-			w.Write([]byte(expectedResponse))
+			_, _ = w.Write([]byte(expectedResponse))
 		}),
 	})
 	defer server.Close()

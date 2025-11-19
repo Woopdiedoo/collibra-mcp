@@ -46,45 +46,45 @@ func Init() *Config {
 
 func initConfigOptions() {
 	pflag.String("api-url", "", "Collibra API URL (env: COLLIBRA_MCP_API_URL)")
-	viper.BindEnv("api.url", "COLLIBRA_MCP_API_URL")
-	viper.BindPFlag("api.url", pflag.Lookup("api-url"))
+	_ = viper.BindEnv("api.url", "COLLIBRA_MCP_API_URL")
+	_ = viper.BindPFlag("api.url", pflag.Lookup("api-url"))
 
 	pflag.String("api-username", "", "Collibra API username (env: COLLIBRA_MCP_API_USR)")
-	viper.BindEnv("api.username", "COLLIBRA_MCP_API_USR")
-	viper.BindPFlag("api.username", pflag.Lookup("api-username"))
+	_ = viper.BindEnv("api.username", "COLLIBRA_MCP_API_USR")
+	_ = viper.BindPFlag("api.username", pflag.Lookup("api-username"))
 
 	pflag.String("api-password", "", "Collibra API password (env: COLLIBRA_MCP_API_PWD)")
-	viper.BindEnv("api.password", "COLLIBRA_MCP_API_PWD")
-	viper.BindPFlag("api.password", pflag.Lookup("api-password"))
+	_ = viper.BindEnv("api.password", "COLLIBRA_MCP_API_PWD")
+	_ = viper.BindPFlag("api.password", pflag.Lookup("api-password"))
 
 	pflag.Bool("skip-tls-verify", false, "Skip TLS certificate verification (env: COLLIBRA_MCP_API_SKIP_TLS_VERIFY)")
-	viper.BindEnv("api.skip-tls-verify", "COLLIBRA_MCP_API_SKIP_TLS_VERIFY")
-	viper.BindPFlag("api.skip-tls-verify", pflag.Lookup("skip-tls-verify"))
+	_ = viper.BindEnv("api.skip-tls-verify", "COLLIBRA_MCP_API_SKIP_TLS_VERIFY")
+	_ = viper.BindPFlag("api.skip-tls-verify", pflag.Lookup("skip-tls-verify"))
 	viper.SetDefault("api.skip-tls-verify", false)
 
 	pflag.String("api-proxy", "", "HTTP proxy URL for API requests (env: COLLIBRA_MCP_API_PROXY, HTTP_PROXY, HTTPS_PROXY)")
-	viper.BindEnv("api.proxy", "COLLIBRA_MCP_API_PROXY")
-	viper.BindEnv("api.proxy", "HTTP_PROXY")  // For compatibility with DefaultTransport
-	viper.BindEnv("api.proxy", "HTTPS_PROXY") // For compatibility with DefaultTransport
-	viper.BindPFlag("api.proxy", pflag.Lookup("api-proxy"))
+	_ = viper.BindEnv("api.proxy", "COLLIBRA_MCP_API_PROXY")
+	_ = viper.BindEnv("api.proxy", "HTTP_PROXY")  // For compatibility with DefaultTransport
+	_ = viper.BindEnv("api.proxy", "HTTPS_PROXY") // For compatibility with DefaultTransport
+	_ = viper.BindPFlag("api.proxy", pflag.Lookup("api-proxy"))
 
 	pflag.String("mode", "stdio", "MCP server mode: 'stdio', 'http', 'http-sse', or 'http-streamable' (env: COLLIBRA_MCP_MODE)")
-	viper.BindEnv("mcp.mode", "COLLIBRA_MCP_MODE")
-	viper.BindPFlag("mcp.mode", pflag.Lookup("mode"))
+	_ = viper.BindEnv("mcp.mode", "COLLIBRA_MCP_MODE")
+	_ = viper.BindPFlag("mcp.mode", pflag.Lookup("mode"))
 	viper.SetDefault("mcp.mode", "stdio")
 
 	pflag.Int("port", 8080, "HTTP server port (only used in http mode) (env: COLLIBRA_MCP_HTTP_PORT)")
-	viper.BindEnv("mcp.http.port", "COLLIBRA_MCP_HTTP_PORT")
-	viper.BindPFlag("mcp.http.port", pflag.Lookup("port"))
+	_ = viper.BindEnv("mcp.http.port", "COLLIBRA_MCP_HTTP_PORT")
+	_ = viper.BindPFlag("mcp.http.port", pflag.Lookup("port"))
 	viper.SetDefault("mcp.http.port", 8080)
 
 	pflag.StringSlice("enabled-tools", []string{}, "Optional comma-separated list of tool names to enable instead of enabling all tools (cannot be used with disabled-tools) (env: COLLIBRA_MCP_ENABLED_TOOLS)")
-	viper.BindEnv("mcp.enabled-tools", "COLLIBRA_MCP_ENABLED_TOOLS")
-	viper.BindPFlag("mcp.enabled-tools", pflag.Lookup("enabled-tools"))
+	_ = viper.BindEnv("mcp.enabled-tools", "COLLIBRA_MCP_ENABLED_TOOLS")
+	_ = viper.BindPFlag("mcp.enabled-tools", pflag.Lookup("enabled-tools"))
 
 	pflag.StringSlice("disabled-tools", []string{}, "Optional comma-separated list of tool names to disable while enabling the remaining tools (cannot be used with enabled-tools) (env: COLLIBRA_MCP_DISABLED_TOOLS)")
-	viper.BindEnv("mcp.disabled-tools", "COLLIBRA_MCP_DISABLED_TOOLS")
-	viper.BindPFlag("mcp.disabled-tools", pflag.Lookup("disabled-tools"))
+	_ = viper.BindEnv("mcp.disabled-tools", "COLLIBRA_MCP_DISABLED_TOOLS")
+	_ = viper.BindPFlag("mcp.disabled-tools", pflag.Lookup("disabled-tools"))
 }
 
 func printUsage(version string) {
