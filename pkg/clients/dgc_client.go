@@ -185,7 +185,9 @@ func executeRequest(client *http.Client, req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {

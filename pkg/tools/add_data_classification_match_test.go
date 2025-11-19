@@ -17,7 +17,7 @@ func TestAddClassificationMatch_Success(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"id": "12345678-1234-1234-1234-123456789abc",
 			"createdBy": "4d250cc5-e583-4640-9874-b93d82c7a6cb",
 			"createdOn": 1475503010320,
@@ -126,7 +126,7 @@ func TestAddClassificationMatch_MissingClassificationID(t *testing.T) {
 func TestAddClassificationMatch_AssetNotFound(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"statusCode": 404,
 			"message": "Asset not found"
 		}`))
@@ -161,7 +161,7 @@ func TestAddClassificationMatch_AssetNotFound(t *testing.T) {
 func TestAddClassificationMatch_AlreadyExists(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		w.Write([]byte(`{
+		_, _ = w.Write([]byte(`{
 			"statusCode": 422,
 			"message": "Classification match already exists"
 		}`))

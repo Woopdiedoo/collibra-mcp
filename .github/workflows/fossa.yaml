@@ -1,0 +1,22 @@
+name: FOSSA legal compliance scan
+run-name: FOSSA scan
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  fossa:
+    runs-on:
+      - runs-on
+      - run-id=${{ github.run_id }}
+      - runner=sm
+      - env=production-eu
+      - tag=fossa
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: FOSSA Scan
+        uses: fossas/fossa-action@v1
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}

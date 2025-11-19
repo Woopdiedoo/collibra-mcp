@@ -80,7 +80,9 @@ func fetchJSON(method string, endpoint string, ctx context.Context, httpClient *
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to make request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

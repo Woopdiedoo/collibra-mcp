@@ -14,23 +14,22 @@ If you have a question or aren't sure how to contribute, the best way to get in 
 
 ## 🤝 How to Contribute
 
-We follow a standard "fork and pull" workflow.
+We follow a standard branch-based workflow.
 
-1.  **Fork** the repository to your own GitHub account.
-2.  **Clone** your fork to your local machine:
+1.  **Clone** the repository to your local machine:
     ```bash
-    git clone [https://github.com/collibra/chip.git](https://github.com/collibra/chip.git)
+    git clone https://github.com/collibra/chip.git
     cd chip
     ```
-3.  **Create a new branch** for your changes. Please use a descriptive name:
+2.  **Create a new branch** for your changes. Please use a descriptive name:
     ```bash
     # For a new feature
     git checkout -b feat/my-new-feature
     # For a bug fix
     git checkout -b fix/issue-123
     ```
-4.  **Make your changes** to the code.
-5.  **Run tests and linters** to ensure your code is ready.
+3.  **Make your changes** to the code.
+4.  **Run tests and linters** to ensure your code is ready.
     ```bash
     # Run tests (with the race detector!)
     go test -race ./...
@@ -38,13 +37,13 @@ We follow a standard "fork and pull" workflow.
     # Run the linter (we use golangci-lint)
     golangci-lint run
     ```
-6.  **Commit your changes** using our commit message convention (see below).
-7.  **Push** your branch to your fork:
+5.  **Commit your changes** using our commit message convention (see below).
+6.  **Push** your branch to the repository:
     ```bash
     git push origin feat/my-new-feature
     ```
-8.  **Open a Pull Request (PR)** from your branch to our `main` branch.
-9.  A maintainer will review your PR, and we'll work with you to get it merged.
+7.  **Open a Pull Request (PR)** from your branch to our `main` branch.
+8.  A maintainer will review your PR, and we'll work with you to get it merged.
 
 ---
 

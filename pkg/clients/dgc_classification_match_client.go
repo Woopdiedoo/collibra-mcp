@@ -74,7 +74,9 @@ func AddDataClassificationMatch(ctx context.Context, httpClient *http.Client, re
 	if err != nil {
 		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -123,7 +125,9 @@ func SearchDataClassificationMatches(ctx context.Context, httpClient *http.Clien
 		return nil, 0, fmt.Errorf("failed to make request: %w", err)
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -156,7 +160,9 @@ func RemoveDataClassificationMatch(ctx context.Context, httpClient *http.Client,
 	if err != nil {
 		return fmt.Errorf("failed to make request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	if resp.StatusCode == 404 {
 		return fmt.Errorf("classification match not found")

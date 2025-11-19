@@ -37,7 +37,9 @@ func callTool(ctx context.Context, collibraHttpClient *http.Client, endpoint str
 	if err != nil {
 		return "", fmt.Errorf("failed to make request: %w", err)
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
