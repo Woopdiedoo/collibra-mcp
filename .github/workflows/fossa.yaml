@@ -6,12 +6,7 @@ on:
       - 'main'
 jobs:
   fossa:
-    runs-on:
-      - runs-on
-      - run-id=${{ github.run_id }}
-      - runner=sm
-      - env=production-eu
-      - tag=fossa
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -19,4 +14,4 @@ jobs:
       - name: FOSSA Scan
         uses: fossas/fossa-action@v1
         with:
-          api-key: ${{ secrets.FOSSA_API_KEY }}
+          api-key: ${{ secrets.FOSSA_PUBLIC_API_KEY }}

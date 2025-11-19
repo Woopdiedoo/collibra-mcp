@@ -12,12 +12,7 @@ on:
 
 jobs:
   ci:
-    runs-on:
-      - runs-on
-      - run-id=${{ github.run_id }}
-      - runner=sm
-      - env=production-eu
-      - tag=ci
+    runs-on: ubuntu-latest
     env:
       BUILD_DIR: 'build'
       CHART_NAME: 'chip'
@@ -51,6 +46,11 @@ jobs:
 
       - name: Compile
         run: go build -v ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.4.0
 
       - name: Test
         run: go test -v ./...
