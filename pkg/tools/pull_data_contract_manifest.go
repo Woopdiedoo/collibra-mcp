@@ -21,8 +21,8 @@ type PullDataContractManifestOutput struct {
 	Found    bool   `json:"found" jsonschema:"Whether the manifest was found"`
 }
 
-func NewPullDataContractManifestTool() *chip.CollibraTool[PullDataContractManifestInput, PullDataContractManifestOutput] {
-	return &chip.CollibraTool[PullDataContractManifestInput, PullDataContractManifestOutput]{
+func NewPullDataContractManifestTool() *chip.Tool[PullDataContractManifestInput, PullDataContractManifestOutput] {
+	return &chip.Tool[PullDataContractManifestInput, PullDataContractManifestOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_contract_manifest_pull",
 			Description: "Download the manifest file for the currently active version of a specific data contract. Returns the manifest content as a string.",

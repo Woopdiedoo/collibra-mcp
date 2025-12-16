@@ -25,8 +25,8 @@ type SearchDataClassesOutput struct {
 	Error       string              `json:"error,omitempty" jsonschema:"HTTP or other error message if the request failed"`
 }
 
-func NewSearchDataClassesTool() *chip.CollibraTool[SearchDataClassesInput, SearchDataClassesOutput] {
-	return &chip.CollibraTool[SearchDataClassesInput, SearchDataClassesOutput]{
+func NewSearchDataClassesTool() *chip.Tool[SearchDataClassesInput, SearchDataClassesOutput] {
+	return &chip.Tool[SearchDataClassesInput, SearchDataClassesOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_class_search",
 			Description: "Search for data classes in Collibra's classification service. Supports filtering by name, description, and whether they contain rules.",

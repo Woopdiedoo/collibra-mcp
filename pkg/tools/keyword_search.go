@@ -37,8 +37,8 @@ type SearchKeywordResource struct {
 	Name           string `json:"name" jsonschema:"The name of the resource"`
 }
 
-func NewSearchKeywordTool() *chip.CollibraTool[SearchKeywordInput, SearchKeywordOutput] {
-	return &chip.CollibraTool[SearchKeywordInput, SearchKeywordOutput]{
+func NewSearchKeywordTool() *chip.Tool[SearchKeywordInput, SearchKeywordOutput] {
+	return &chip.Tool[SearchKeywordInput, SearchKeywordOutput]{
 		Tool: &mcp.Tool{
 			Name:        "asset_keyword_search",
 			Description: "Perform a wildcard keyword search for assets in the Collibra knowledge graph. Supports filtering by resource type, community, domain, asset type, status, and creator.",

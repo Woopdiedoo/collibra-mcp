@@ -17,8 +17,8 @@ type AskGlossaryOutput struct {
 	Answer string `json:"output" jsonschema:"the answer from the business glossary agent"`
 }
 
-func NewAskGlossaryTool() *chip.CollibraTool[AskGlossaryInput, AskGlossaryOutput] {
-	return &chip.CollibraTool[AskGlossaryInput, AskGlossaryOutput]{
+func NewAskGlossaryTool() *chip.Tool[AskGlossaryInput, AskGlossaryOutput] {
+	return &chip.Tool[AskGlossaryInput, AskGlossaryOutput]{
 		Tool: &mcp.Tool{
 			Name:        "business_glossary_discover",
 			Description: "Ask the business glossary agent questions about terms and definitions in Collibra.",

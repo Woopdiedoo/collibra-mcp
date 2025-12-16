@@ -17,8 +17,8 @@ type AskDadOutput struct {
 	Answer string `json:"output" jsonschema:"the answer from the data asset discovery agent"`
 }
 
-func NewAskDadTool() *chip.CollibraTool[AskDadInput, AskDadOutput] {
-	return &chip.CollibraTool[AskDadInput, AskDadOutput]{
+func NewAskDadTool() *chip.Tool[AskDadInput, AskDadOutput] {
+	return &chip.Tool[AskDadInput, AskDadOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_assets_discover",
 			Description: "Ask the data asset discovery agent questions about available data assets in Collibra.",

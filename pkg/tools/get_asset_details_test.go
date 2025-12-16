@@ -35,7 +35,7 @@ func TestGetAssetDetails(t *testing.T) {
 	config := &chip.ToolConfig{
 		CollibraUrl: server.URL,
 	}
-	ctx := context.WithValue(context.Background(), chip.ToolConfigKey, config)
+	ctx := chip.SetToolConfig(context.Background(), config)
 
 	output, err := tools.NewAssetDetailsTool().ToolHandler(ctx, client, tools.AssetDetailsInput{
 		AssetID: assetId.String(),

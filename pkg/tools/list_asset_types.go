@@ -33,8 +33,8 @@ type AssetType struct {
 	Product            string `json:"product,omitempty" jsonschema:"The product to which this asset type is linked"`
 }
 
-func NewListAssetTypesTool() *chip.CollibraTool[ListAssetTypesInput, ListAssetTypesOutput] {
-	return &chip.CollibraTool[ListAssetTypesInput, ListAssetTypesOutput]{
+func NewListAssetTypesTool() *chip.Tool[ListAssetTypesInput, ListAssetTypesOutput] {
+	return &chip.Tool[ListAssetTypesInput, ListAssetTypesOutput]{
 		Tool: &mcp.Tool{
 			Name:        "asset_types_list",
 			Description: "List asset types available in Collibra with their properties and metadata.",

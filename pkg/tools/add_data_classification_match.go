@@ -22,8 +22,8 @@ type AddDataClassificationMatchOutput struct {
 	Error   string                           `json:"error,omitempty" jsonschema:"Error message if the operation failed"`
 }
 
-func NewAddDataClassificationMatchTool() *chip.CollibraTool[AddDataClassificationMatchInput, AddDataClassificationMatchOutput] {
-	return &chip.CollibraTool[AddDataClassificationMatchInput, AddDataClassificationMatchOutput]{
+func NewAddDataClassificationMatchTool() *chip.Tool[AddDataClassificationMatchInput, AddDataClassificationMatchOutput] {
+	return &chip.Tool[AddDataClassificationMatchInput, AddDataClassificationMatchOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_classification_match_add",
 			Description: "Associate a data classification (data class) with a specific data asset in Collibra. Requires both the asset UUID and the classification UUID.",

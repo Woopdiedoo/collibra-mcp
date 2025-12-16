@@ -8,6 +8,12 @@ type CollibraClient struct {
 	next http.RoundTripper
 }
 
+func NewCollibraClient(transport http.RoundTripper) *CollibraClient {
+	return &CollibraClient{
+		next: transport,
+	}
+}
+
 func (c *CollibraClient) RoundTrip(request *http.Request) (*http.Response, error) {
 	reqClone := request.Clone(request.Context())
 	if reqClone.Header.Get("Content-Type") == "" {
@@ -16,10 +22,4 @@ func (c *CollibraClient) RoundTrip(request *http.Request) (*http.Response, error
 	}
 	reqClone.Header.Set("User-Agent", "Collibra MCP/"+Version)
 	return c.next.RoundTrip(reqClone)
-}
-
-func NewCollibraClient(transport http.RoundTripper) *CollibraClient {
-	return &CollibraClient{
-		next: transport,
-	}
 }

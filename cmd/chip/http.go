@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/collibra/chip/pkg/chip"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 type collibraClient struct {
@@ -68,7 +69,7 @@ func (c *collibraClient) RoundTrip(request *http.Request) (*http.Response, error
 	if c.config.Api.Username != "" && c.config.Api.Password != "" {
 		reqClone.SetBasicAuth(c.config.Api.Username, c.config.Api.Password)
 	} else {
-		chip.CopyHeader(toolRequest, reqClone, "Authorization")
+		copyHeader(toolRequest, reqClone, "Authorization")
 	}
 	reqClone.Header.Set("X-MCP-Session-Id", chip.GetSessionId(toolRequest))
 	reqClone.Header.Set("X-MCP-Tool-Name", toolRequest.Params.Name)
@@ -94,4 +95,16 @@ func generateTraceParent() string {
 	_, _ = rand.Read(spanID)
 
 	return fmt.Sprintf("00-%x-%x-01", traceID, spanID)
+}
+
+func copyHeader(toolRequest *mcp.CallToolRequest, httpRequest *http.Request, header string) {
+	extra := toolRequest.GetExtra()
+	if extra == nil || extra.Header == nil {
+		return
+	}
+	if values, exists := extra.Header[header]; exists {
+		for _, value := range values {
+			httpRequest.Header.Add(header, value)
+		}
+	}
 }
