@@ -26,8 +26,8 @@ type PushDataContractManifestOutput struct {
 	Success    bool   `json:"success" jsonschema:"Whether the manifest was successfully uploaded"`
 }
 
-func NewPushDataContractManifestTool() *chip.CollibraTool[PushDataContractManifestInput, PushDataContractManifestOutput] {
-	return &chip.CollibraTool[PushDataContractManifestInput, PushDataContractManifestOutput]{
+func NewPushDataContractManifestTool() *chip.Tool[PushDataContractManifestInput, PushDataContractManifestOutput] {
+	return &chip.Tool[PushDataContractManifestInput, PushDataContractManifestOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_contract_manifest_push",
 			Description: "Upload a new version of a data contract manifest to Collibra. The manifestID and version are automatically parsed from the manifest content if it adheres to the Open Data Contract Standard.",

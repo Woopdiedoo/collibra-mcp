@@ -28,8 +28,8 @@ type DataContract struct {
 	ManifestID string `json:"manifestId" jsonschema:"The unique identifier of the data contract manifest"`
 }
 
-func NewListDataContractsTool() *chip.CollibraTool[ListDataContractsInput, ListDataContractsOutput] {
-	return &chip.CollibraTool[ListDataContractsInput, ListDataContractsOutput]{
+func NewListDataContractsTool() *chip.Tool[ListDataContractsInput, ListDataContractsOutput] {
+	return &chip.Tool[ListDataContractsInput, ListDataContractsOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_contract_list",
 			Description: "List data contracts available in Collibra. Returns a paginated list of data contract metadata, sorted by the last modified date in descending order.",

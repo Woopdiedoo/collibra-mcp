@@ -26,8 +26,8 @@ type SearchClassificationMatchesOutput struct {
 	Error                 string                            `json:"error,omitempty" jsonschema:"HTTP or other error message if the request failed"`
 }
 
-func NewSearchClassificationMatchesTool() *chip.CollibraTool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput] {
-	return &chip.CollibraTool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput]{
+func NewSearchClassificationMatchesTool() *chip.Tool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput] {
+	return &chip.Tool[SearchClassificationMatchesInput, SearchClassificationMatchesOutput]{
 		Tool: &mcp.Tool{
 			Name:        "data_classification_match_search",
 			Description: "Search for classification matches (associations between data classes and assets) in Collibra. Supports filtering by asset IDs, statuses (ACCEPTED/REJECTED/SUGGESTED), classification IDs, and asset type IDs.",

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/collibra/chip/pkg/chip"
 	"github.com/collibra/chip/pkg/clients"
@@ -25,8 +26,8 @@ type AssetDetailsOutput struct {
 	Found bool           `json:"found" jsonschema:"whether the asset was found"`
 }
 
-func NewAssetDetailsTool() *chip.CollibraTool[AssetDetailsInput, AssetDetailsOutput] {
-	return &chip.CollibraTool[AssetDetailsInput, AssetDetailsOutput]{
+func NewAssetDetailsTool() *chip.Tool[AssetDetailsInput, AssetDetailsOutput] {
+	return &chip.Tool[AssetDetailsInput, AssetDetailsOutput]{
 		Tool: &mcp.Tool{
 			Name:        "asset_details_get",
 			Description: "Get detailed information about a specific asset by its UUID, including attributes, relations, and metadata. Returns up to 100 attributes per type and supports cursor-based pagination for relations (50 per page).",
@@ -65,7 +66,7 @@ func handleAssetDetails(ctx context.Context, collibraHttpClient *http.Client, in
 		}, nil
 	}
 
-	collibraUrl, err := chip.GetCollibraUrl(ctx)
+	collibraUrl, err := getCollibraUrl(ctx)
 	if err != nil {
 		slog.Warn("Collibra instance URL unknown, links will be rendered without host")
 	}
@@ -75,4 +76,21 @@ func handleAssetDetails(ctx context.Context, collibraHttpClient *http.Client, in
 		Found: true,
 		Link:  fmt.Sprintf("%s/asset/%s", collibraUrl, assetUUID),
 	}, nil
+}
+
+func getCollibraUrl(ctx context.Context) (string, error) {
+	toolRequest, err := chip.GetCallToolRequest(ctx)
+	if err != nil {
+		return "", err
+	}
+	if toolRequest.GetExtra() != nil {
+		if url := toolRequest.Extra.Header.Get("collibraUrl"); url != "" {
+			return strings.TrimSuffix(url, "/"), nil
+		}
+	}
+	config, err := chip.GetToolConfig(ctx)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSuffix(config.CollibraUrl, "/"), nil
 }
