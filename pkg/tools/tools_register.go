@@ -23,6 +23,6 @@ func RegisterAll(server *chip.Server, client *http.Client, toolConfig *chip.Tool
 
 func toolRegister[In, Out any](server *chip.Server, toolConfig *chip.ToolConfig, tool *chip.Tool[In, Out]) {
 	if toolConfig.IsToolEnabled(tool.Tool.Name) {
-		chip.RegisterTool(server, tool, toolConfig)
+		chip.RegisterTool(server, tool)
 	}
 }

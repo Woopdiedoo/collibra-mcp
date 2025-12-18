@@ -67,32 +67,15 @@ func handleAssetDetails(collibraClient *http.Client) chip.ToolHandlerFunc[AssetD
 			}, nil
 		}
 
-		collibraUrl, err := getCollibraUrl(ctx)
-		if err != nil {
+		collibraHost, ok := chip.GetCollibraHost(ctx)
+		if !ok {
 			slog.WarnContext(ctx, "Collibra instance URL unknown, links will be rendered without host")
 		}
 
 		return AssetDetailsOutput{
 			Asset: &assets[0],
 			Found: true,
-			Link:  fmt.Sprintf("%s/asset/%s", collibraUrl, assetUUID),
+			Link:  fmt.Sprintf("%s/asset/%s", strings.TrimSuffix(collibraHost, "/"), assetUUID),
 		}, nil
 	}
-}
-
-func getCollibraUrl(ctx context.Context) (string, error) {
-	toolRequest, err := chip.GetCallToolRequest(ctx)
-	if err != nil {
-		return "", err
-	}
-	if toolRequest.GetExtra() != nil {
-		if url := toolRequest.Extra.Header.Get("collibraUrl"); url != "" {
-			return strings.TrimSuffix(url, "/"), nil
-		}
-	}
-	config, err := chip.GetToolConfig(ctx)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSuffix(config.CollibraUrl, "/"), nil
 }

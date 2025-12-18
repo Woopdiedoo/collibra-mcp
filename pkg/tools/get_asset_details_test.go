@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/collibra/chip/pkg/chip"
 	"github.com/collibra/chip/pkg/clients"
 	"github.com/collibra/chip/pkg/tools"
 	"github.com/google/uuid"
@@ -32,12 +31,7 @@ func TestGetAssetDetails(t *testing.T) {
 
 	client := newClient(server)
 
-	config := &chip.ToolConfig{
-		CollibraUrl: server.URL,
-	}
-	ctx := chip.SetToolConfig(context.Background(), config)
-
-	output, err := tools.NewAssetDetailsTool(client).ToolHandler(ctx, tools.AssetDetailsInput{
+	output, err := tools.NewAssetDetailsTool(client).ToolHandler(context.Background(), tools.AssetDetailsInput{
 		AssetID: assetId.String(),
 	})
 	if err != nil {
