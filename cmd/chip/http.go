@@ -58,29 +58,26 @@ func newCollibraClient(config *Config) *http.Client {
 }
 
 func (c *collibraClient) RoundTrip(request *http.Request) (*http.Response, error) {
-	reqClone := request.Clone(request.Context())
-	toolRequest, err := chip.GetCallToolRequest(reqClone.Context())
-	if err != nil {
-		return nil, err
-	}
 	if c.config.Api.Url == "" {
 		return nil, fmt.Errorf("API URL is not configured")
+	}
+	baseURL, err := url.Parse(c.config.Api.Url)
+	if err != nil {
+		return nil, fmt.Errorf("invalid API URL configuration: %w", err)
+	}
+	reqClone := request.Clone(request.Context())
+	toolRequest, ok := chip.GetCallToolRequest(reqClone.Context())
+	if !ok {
+		return nil, fmt.Errorf("toolRequest not found in ctx")
 	}
 	if c.config.Api.Username != "" && c.config.Api.Password != "" {
 		reqClone.SetBasicAuth(c.config.Api.Username, c.config.Api.Password)
 	} else {
 		copyHeader(toolRequest, reqClone, "Authorization")
 	}
-	reqClone.Header.Set("X-MCP-Session-Id", chip.GetSessionId(toolRequest))
+	reqClone.Header.Set("X-MCP-Session-Id", chip.GetSessionId(reqClone.Context()))
 	reqClone.Header.Set("X-MCP-Tool-Name", toolRequest.Params.Name)
 	reqClone.Header.Set("traceparent", generateTraceParent())
-	baseURL, err := url.Parse(c.config.Api.Url)
-	if err != nil {
-		return nil, fmt.Errorf("invalid API URL configuration: %w", err)
-	}
-	if toolRequest.GetExtra() != nil {
-		toolRequest.Extra.Header.Set("collibraUrl", c.config.Api.Url)
-	}
 	reqClone.URL.Scheme = baseURL.Scheme
 	reqClone.URL.Host = baseURL.Host
 	reqClone.URL.Path = path.Join(baseURL.Path, request.URL.Path)

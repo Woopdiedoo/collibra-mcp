@@ -2,6 +2,7 @@ package chip
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"slices"
 
@@ -45,7 +46,6 @@ func NewServer(opts ...ServerOption) *Server {
 }
 
 type ToolConfig struct {
-	CollibraUrl   string
 	EnabledTools  []string
 	DisabledTools []string
 }
@@ -73,7 +73,8 @@ type Tool[In, Out any] struct {
 	ToolHandler ToolHandlerFunc[In, Out]
 }
 
-func RegisterTool[In, Out any](s *Server, tool *Tool[In, Out], toolConfig *ToolConfig) {
+func RegisterTool[In, Out any](s *Server, tool *Tool[In, Out]) {
+	slog.Info(fmt.Sprintf("Registering tool: %s", tool.Tool.Name))
 	handler := func(ctx context.Context, toolRequest *mcp.CallToolRequest, input In) (*mcp.CallToolResult, Out, error) {
 		var capturedOutput Out
 
@@ -95,7 +96,6 @@ func RegisterTool[In, Out any](s *Server, tool *Tool[In, Out], toolConfig *ToolC
 		}
 
 		ctx = SetCallToolRequest(ctx, toolRequest)
-		ctx = SetToolConfig(ctx, toolConfig)
 		res, err := middlewareChain(ctx, toolRequest)
 
 		return res, capturedOutput, err

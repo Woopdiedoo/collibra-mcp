@@ -2,7 +2,6 @@ package chip
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -12,37 +11,31 @@ type contextKey int
 
 const (
 	callToolRequestKey contextKey = iota
-	toolConfigKey
+	collibraHostKey
 )
-
-func SetToolConfig(ctx context.Context, toolConfig *ToolConfig) context.Context {
-	return context.WithValue(ctx, toolConfigKey, toolConfig)
-}
 
 func SetCallToolRequest(ctx context.Context, toolRequest *mcp.CallToolRequest) context.Context {
 	return context.WithValue(ctx, callToolRequestKey, toolRequest)
 }
 
-func GetCallToolRequest(ctx context.Context) (*mcp.CallToolRequest, error) {
+func GetCallToolRequest(ctx context.Context) (*mcp.CallToolRequest, bool) {
 	toolRequest, ok := ctx.Value(callToolRequestKey).(*mcp.CallToolRequest)
-	if !ok || toolRequest == nil {
-		return nil, errors.New("CallToolRequest not found in ctx")
-	}
-	return toolRequest, nil
+	return toolRequest, ok
 }
 
-func GetToolConfig(ctx context.Context) (*ToolConfig, error) {
-	config, ok := ctx.Value(toolConfigKey).(*ToolConfig)
-	if !ok || config == nil {
-		return nil, errors.New("ToolConfig not found in ctx")
-	}
-	return config, nil
+func SetCollibraHost(ctx context.Context, collibraHost string) context.Context {
+	return context.WithValue(ctx, collibraHostKey, collibraHost)
 }
 
-func GetSessionId(toolRequest *mcp.CallToolRequest) string {
-	sessionId := toolRequest.GetSession().ID()
-	if sessionId == "" {
-		return uuid.New().String()
+func GetCollibraHost(ctx context.Context) (string, bool) {
+	collibraHost, ok := ctx.Value(collibraHostKey).(string)
+	return collibraHost, ok
+}
+
+func GetSessionId(ctx context.Context) string {
+	toolRequest, ok := GetCallToolRequest(ctx)
+	if ok {
+		return toolRequest.GetSession().ID()
 	}
-	return sessionId
+	return uuid.New().String()
 }

@@ -28,9 +28,8 @@ func main() {
 	}
 
 	client := newCollibraClient(config)
-	server := chip.NewServer(chip.WithToolMiddleware(chip.ToolMiddlewareFunc(logMiddleware)))
+	server := chip.NewServer(chip.WithToolMiddleware(chip.ToolMiddlewareFunc(setCollibraHost(config.Api.Url))))
 	toolConfig := &chip.ToolConfig{
-		CollibraUrl:   config.Api.Url,
 		EnabledTools:  config.Mcp.EnabledTools,
 		DisabledTools: config.Mcp.DisabledTools,
 	}
@@ -88,7 +87,10 @@ func runHttpServer(mode string, server *chip.Server, port int) {
 	}
 }
 
-func logMiddleware(ctx context.Context, toolRequest *mcp.CallToolRequest, next chip.CallToolFunc) (*mcp.CallToolResult, error) {
-	slog.InfoContext(ctx, fmt.Sprintf("Calling tool: %s", toolRequest.Params.Name), "tool_name", toolRequest.Params.Name)
-	return next(ctx, toolRequest)
+func setCollibraHost(collibraHost string) func(ctx context.Context, toolRequest *mcp.CallToolRequest, next chip.CallToolFunc) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, toolRequest *mcp.CallToolRequest, next chip.CallToolFunc) (*mcp.CallToolResult, error) {
+		ctx = chip.SetCollibraHost(ctx, collibraHost)
+		slog.InfoContext(ctx, fmt.Sprintf("Calling tool: %s", toolRequest.Params.Name), "tool_name", toolRequest.Params.Name)
+		return next(ctx, toolRequest)
+	}
 }
