@@ -40,11 +40,6 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
      - `chip-windows-amd64.exe` - Windows (Intel/AMD 64-bit)
      - `chip-windows-arm64.exe` - Windows (ARM 64-bit)
 
-2. **Make the binary executable (Linux/macOS):**
-   ```bash
-   chmod +x chip-*
-   ```
-
 3. **Optional: Move to your PATH:**
    ```bash
    # Linux/macOS
