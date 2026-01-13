@@ -1,15 +1,15 @@
 package auth
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 	"time"
-
-	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/launcher"
-	"github.com/go-rod/rod/lib/proto"
 )
 
 const (
@@ -25,109 +25,67 @@ type SSOAuthResult struct {
 	ExpiresAt time.Time
 }
 
-// AuthenticateWithSSO opens a browser window for the user to authenticate via SSO
-// and captures the session cookie after successful authentication.
+// AuthenticateWithSSO opens a browser for the user to authenticate via SSO
+// then prompts them to paste the session cookie.
 func AuthenticateWithSSO(ctx context.Context, collibraURL string, timeout time.Duration) (*SSOAuthResult, error) {
 	if timeout == 0 {
 		timeout = DefaultTimeout
 	}
 
 	slog.Info("Starting SSO authentication...")
-	slog.Info(fmt.Sprintf("Opening browser to: %s", collibraURL))
 
-	// Find or download a browser
-	path, _ := launcher.LookPath()
-	if path == "" {
-		slog.Info("No browser found, downloading Chromium...")
+	// Open the URL in the default browser (preserves SSO/Intune trust)
+	if err := openBrowser(collibraURL); err != nil {
+		return nil, fmt.Errorf("failed to open browser: %w", err)
 	}
 
-	// Launch browser in headed mode so user can interact with SSO
-	l := launcher.New().
-		Headless(false).
-		Set("disable-gpu").
-		Set("no-first-run").
-		Set("no-default-browser-check")
+	// Print instructions for the user
+	fmt.Println()
+	fmt.Println("╔════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                    SSO Authentication                          ║")
+	fmt.Println("╠════════════════════════════════════════════════════════════════╣")
+	fmt.Println("║  1. Log in to Collibra in the browser that just opened         ║")
+	fmt.Println("║  2. Once logged in, press F12 to open Developer Tools          ║")
+	fmt.Println("║  3. Go to: Application → Cookies → " + extractDomain(collibraURL))
+	fmt.Println("║  4. Find the 'JSESSIONID' cookie and copy its Value            ║")
+	fmt.Println("║  5. Paste the cookie value below and press Enter               ║")
+	fmt.Println("╚════════════════════════════════════════════════════════════════╝")
+	fmt.Println()
+	fmt.Print("Paste JSESSIONID cookie value: ")
 
-	controlURL, err := l.Launch()
+	// Read the cookie from stdin
+	reader := bufio.NewReader(os.Stdin)
+	cookie, err := reader.ReadString('\n')
 	if err != nil {
-		return nil, fmt.Errorf("failed to launch browser: %w", err)
+		return nil, fmt.Errorf("failed to read cookie: %w", err)
 	}
 
-	browser := rod.New().ControlURL(controlURL)
-	if err := browser.Connect(); err != nil {
-		return nil, fmt.Errorf("failed to connect to browser: %w", err)
-	}
-	defer browser.Close()
-
-	// Create a context with timeout
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
-	// Navigate to Collibra (will trigger SSO redirect)
-	page, err := browser.Page(proto.TargetCreateTarget{URL: collibraURL})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create page: %w", err)
-	}
-
-	slog.Info("Waiting for SSO authentication to complete...")
-	slog.Info("Please log in using the browser window that opened.")
-
-	// Wait for the session cookie to appear (indicates successful auth)
-	result, err := waitForSessionCookie(ctx, page, collibraURL)
-	if err != nil {
-		return nil, err
+	cookie = strings.TrimSpace(cookie)
+	if cookie == "" {
+		return nil, fmt.Errorf("no cookie provided")
 	}
 
 	slog.Info("SSO authentication successful!")
-	return result, nil
+	return &SSOAuthResult{
+		Cookie:    cookie,
+		ExpiresAt: time.Now().Add(30 * time.Minute),
+	}, nil
 }
 
-// waitForSessionCookie polls for the session cookie until it appears or timeout
-func waitForSessionCookie(ctx context.Context, page *rod.Page, collibraURL string) (*SSOAuthResult, error) {
-	ticker := time.NewTicker(500 * time.Millisecond)
-	defer ticker.Stop()
+// openBrowser opens a URL in the default browser
+func openBrowser(url string) error {
+	var cmd *exec.Cmd
 
-	// Extract the domain from the URL for cookie matching
-	domain := extractDomain(collibraURL)
-
-	for {
-		select {
-		case <-ctx.Done():
-			return nil, fmt.Errorf("SSO authentication timed out - please try again")
-		case <-ticker.C:
-			// Check if we're back on the Collibra domain
-			info, err := page.Info()
-			if err != nil {
-				continue
-			}
-
-			// Only check cookies when we're on the Collibra domain
-			if !strings.Contains(info.URL, domain) {
-				continue
-			}
-
-			// Get all cookies for the page
-			cookies, err := page.Cookies([]string{collibraURL})
-			if err != nil {
-				continue
-			}
-
-			// Look for the session cookie
-			for _, cookie := range cookies {
-				if cookie.Name == SessionCookieName {
-					expiresAt := time.Now().Add(30 * time.Minute) // Default session timeout
-					if cookie.Expires > 0 {
-						expiresAt = time.Unix(int64(cookie.Expires), 0)
-					}
-
-					return &SSOAuthResult{
-						Cookie:    cookie.Value,
-						ExpiresAt: expiresAt,
-					}, nil
-				}
-			}
-		}
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	default:
+		cmd = exec.Command("xdg-open", url)
 	}
+
+	return cmd.Start()
 }
 
 // extractDomain extracts the domain from a URL
