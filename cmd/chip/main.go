@@ -25,11 +25,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Handle SSO authentication if enabled
+	// Handle SSO authentication if enabled, or try to use cached session
 	if config.Api.SSOAuth {
 		if err := handleSSOAuthentication(config); err != nil {
 			slog.Error(fmt.Sprintf("SSO authentication failed: %v", err))
 			os.Exit(1)
+		}
+	} else if config.Api.Cookie == "" && config.Api.Username == "" {
+		// No auth configured - try to load cached SSO session
+		if err := tryLoadCachedSession(config); err != nil {
+			slog.Debug(fmt.Sprintf("No cached session available: %v", err))
 		}
 	}
 
@@ -87,6 +92,24 @@ func handleSSOAuthentication(config *Config) error {
 		slog.Warn(fmt.Sprintf("Failed to cache session: %v", err))
 	}
 
+	return nil
+}
+
+// tryLoadCachedSession attempts to load a previously cached SSO session
+func tryLoadCachedSession(config *Config) error {
+	cache := auth.NewSessionCache(config.Api.SSOCachePath)
+
+	cached, err := cache.Load(config.Api.Url)
+	if err != nil {
+		return err
+	}
+
+	if cached == nil {
+		return fmt.Errorf("no cached session found")
+	}
+
+	config.Api.Cookie = fmt.Sprintf("JSESSIONID=%s", cached.Cookie)
+	slog.Info(fmt.Sprintf("Using cached SSO session (expires: %s)", cached.ExpiresAt.Format(time.RFC3339)))
 	return nil
 }
 
