@@ -62,102 +62,48 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
 
 ## Running and Configuration
 
-### Authentication Options
+### Authentication
 
-The server supports two authentication approaches, either configured through environment variables or a configuration file
-
-#### Option 1: Server-wide Authentication
-When running over the stdio transport, configure credentials at the server level - all requests use the same credentials:
+The server uses cookie-based authentication with SSO support:
 
 ```bash
-mkdir -p ~/.config/collibra/
+# First-time setup: authenticate via browser
+./chip --api-url "https://your-collibra-instance.com" --sso-auth
 ```
 
-Powershell:
-```powershell
-New-Item -ItemType File -Path $HOME\.config\collibra\mcp.yaml
-```
+This will:
+1. Open your default browser to the Collibra login page
+2. Allow you to complete SSO authentication
+3. Prompt you to paste the session cookie from browser DevTools
+4. Cache the session for future use
 
-bash/zsh:
+After initial authentication, the cached session is automatically used:
 ```bash
-touch ~/.config/collibra/mcp.yaml
+# Subsequent runs use cached session automatically
+./chip --api-url "https://your-collibra-instance.com"
 ```
 
-
-```yaml
-# ~/.config/collibra/mcp.yaml
-api:
-  url: "https://your-collibra-instance.com"
-  username: "your-username"
-  password: "your-password"
-```
-
-The same options can be configured through the respective environment variables COLLIBRA_MCP_API_URL, COLLIBRA_MCP_API_USR and COLLIBRA_MCP_API_PWD.
-
-#### Option 2: Client-provided Authentication
-When running over the http transport, it is recommended that MCP clients provide their own Basic Auth headers for each request:
-```bash
-export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
-./mcp-server
-```
+The session cache is stored at `~/.config/collibra/session_cache.json`.
 
 **For detailed configuration instructions, see [CONFIG.md](docs/CONFIG.md).**
-
-## Security Considerations
-
-- 🔐 **Credentials**: Store sensitive information in environment variables rather than config files
-- 🌐 **Network**: HTTP mode binds to localhost only for security
-- 🔒 **TLS**: Only use `skip-tls-verify: true` for development with self-signed certificates
-- 📁 **File Permissions**: Ensure config files have appropriate permissions when containing credentials
 
 ## Integration with MCP Clients
 
 This server is compatible with any MCP client. Refer to your MCP client's documentation for server configuration. 
 
-Here's how to integrate with some popular clients assuming you have a configuration file setup:
+### VS Code / VS Code Insiders
 
-* Claude desktop
 ```json
-// ~/Library/Application Support/Claude/claude_desktop_config.json
-{
-  "mcpServers": {
-    "collibra": {
-      "type": "stdio",
-      "command": "/path/to/chip-..."
-    }
-  }
-}
-```
-
-* VS Code
-```json
-// .vscode/mcp.json
+// User settings: mcp.json or .vscode/mcp.json
 {
     "servers": {
         "collibra": {
             "type": "stdio",
-            "command": "./chip"
+            "command": "/path/to/chip",
+            "args": ["--api-url", "https://your-collibra-instance.com"]
         }
     }
 }
 ```
 
-* Gemini-cli
-```json
-// ~/.gemini/settings.json
-{
-  "mcpServers": {
-    "collibra": {
-      "command": "/path/to/chip-..."
-    }
-  }
-}
-```
-
-## Enabling or disabling specific tools
-
-You can enable or disable specific tools by passing command line parameters, setting environment variables, or customizing the `mcp.yaml` configuration file.
-You can specify tools to enable or disable by using the tool names listed above (e.g. `asset_details_get`).  For more information, see the [CONFIG.md](docs/CONFIG.md) documentation.
-
-By default, all tools are enabled. Specifying tools to be enabled will enable *only* those tools.  Disabling tools will disable *only* those tools and leave all others enabled.
-At present, enabling and disabling at the same time is not supported. 
+**Note:** For SSO authentication, run the chip binary once manually with `--sso-auth` to cache your session. VS Code will then automatically use the cached session. 
