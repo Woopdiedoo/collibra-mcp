@@ -72,6 +72,8 @@ func (c *collibraClient) RoundTrip(request *http.Request) (*http.Response, error
 	}
 	if c.config.Api.Username != "" && c.config.Api.Password != "" {
 		reqClone.SetBasicAuth(c.config.Api.Username, c.config.Api.Password)
+	} else if c.config.Api.Cookie != "" {
+		reqClone.Header.Set("Cookie", c.config.Api.Cookie)
 	} else {
 		copyHeader(toolRequest, reqClone, "Authorization")
 	}

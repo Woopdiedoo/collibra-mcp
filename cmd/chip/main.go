@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/collibra/chip/pkg/auth"
 	"github.com/collibra/chip/pkg/chip"
 	"github.com/collibra/chip/pkg/tools"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -21,6 +23,14 @@ func main() {
 	if config.Api.Url == "" {
 		slog.Error("Missing Api url")
 		os.Exit(1)
+	}
+
+	// Handle SSO authentication if enabled
+	if config.Api.SSOAuth {
+		if err := handleSSOAuthentication(config); err != nil {
+			slog.Error(fmt.Sprintf("SSO authentication failed: %v", err))
+			os.Exit(1)
+		}
 	}
 
 	if config.Api.Username != "" && config.Api.Password != "" {
@@ -43,6 +53,41 @@ func main() {
 		slog.Error(fmt.Sprintf("Invalid server mode: '%s'", config.Mcp.Mode))
 		os.Exit(1)
 	}
+}
+
+// handleSSOAuthentication performs browser-based SSO authentication
+func handleSSOAuthentication(config *Config) error {
+	cache := auth.NewSessionCache(config.Api.SSOCachePath)
+
+	// Try to load cached session first
+	cached, err := cache.Load(config.Api.Url)
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Failed to load cached session: %v", err))
+	}
+
+	if cached != nil {
+		// Use cached session
+		config.Api.Cookie = fmt.Sprintf("JSESSIONID=%s", cached.Cookie)
+		slog.Info(fmt.Sprintf("Using cached SSO session (expires: %s)", cached.ExpiresAt.Format(time.RFC3339)))
+		return nil
+	}
+
+	// No valid cached session, perform SSO authentication
+	timeout := time.Duration(config.Api.SSOTimeout) * time.Second
+	result, err := auth.AuthenticateWithSSO(context.Background(), config.Api.Url, timeout)
+	if err != nil {
+		return err
+	}
+
+	// Set the cookie in config
+	config.Api.Cookie = fmt.Sprintf("JSESSIONID=%s", result.Cookie)
+
+	// Cache the session for future use
+	if err := cache.Save(result, config.Api.Url); err != nil {
+		slog.Warn(fmt.Sprintf("Failed to cache session: %v", err))
+	}
+
+	return nil
 }
 
 func runStdioServer(server *chip.Server) {

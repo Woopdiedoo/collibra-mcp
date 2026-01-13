@@ -57,6 +57,24 @@ func initConfigOptions() {
 	_ = viper.BindEnv("api.password", "COLLIBRA_MCP_API_PWD")
 	_ = viper.BindPFlag("api.password", pflag.Lookup("api-password"))
 
+	pflag.String("api-cookie", "", "Session cookie for SSO authentication (env: COLLIBRA_MCP_API_COOKIE)")
+	_ = viper.BindEnv("api.cookie", "COLLIBRA_MCP_API_COOKIE")
+	_ = viper.BindPFlag("api.cookie", pflag.Lookup("api-cookie"))
+
+	pflag.Bool("sso-auth", false, "Enable browser-based SSO authentication (env: COLLIBRA_MCP_SSO_AUTH)")
+	_ = viper.BindEnv("api.sso-auth", "COLLIBRA_MCP_SSO_AUTH")
+	_ = viper.BindPFlag("api.sso-auth", pflag.Lookup("sso-auth"))
+	viper.SetDefault("api.sso-auth", false)
+
+	pflag.String("sso-cache-path", "", "Path to cache SSO session (env: COLLIBRA_MCP_SSO_CACHE_PATH)")
+	_ = viper.BindEnv("api.sso-cache-path", "COLLIBRA_MCP_SSO_CACHE_PATH")
+	_ = viper.BindPFlag("api.sso-cache-path", pflag.Lookup("sso-cache-path"))
+
+	pflag.Int("sso-timeout", 300, "Timeout in seconds for SSO authentication (env: COLLIBRA_MCP_SSO_TIMEOUT)")
+	_ = viper.BindEnv("api.sso-timeout", "COLLIBRA_MCP_SSO_TIMEOUT")
+	_ = viper.BindPFlag("api.sso-timeout", pflag.Lookup("sso-timeout"))
+	viper.SetDefault("api.sso-timeout", 300)
+
 	pflag.Bool("skip-tls-verify", false, "Skip TLS certificate verification (env: COLLIBRA_MCP_API_SKIP_TLS_VERIFY)")
 	_ = viper.BindEnv("api.skip-tls-verify", "COLLIBRA_MCP_API_SKIP_TLS_VERIFY")
 	_ = viper.BindPFlag("api.skip-tls-verify", pflag.Lookup("skip-tls-verify"))
@@ -103,6 +121,10 @@ ENVIRONMENT VARIABLES:
   COLLIBRA_MCP_API_URL          Collibra API URL
   COLLIBRA_MCP_API_USR          Collibra API username
   COLLIBRA_MCP_API_PWD          Collibra API password
+  COLLIBRA_MCP_API_COOKIE       Session cookie for SSO authentication (e.g., JSESSIONID=xxx)
+  COLLIBRA_MCP_SSO_AUTH         Enable browser-based SSO authentication (default: false)
+  COLLIBRA_MCP_SSO_CACHE_PATH   Path to cache SSO session
+  COLLIBRA_MCP_SSO_TIMEOUT      Timeout in seconds for SSO authentication (default: 300)
   COLLIBRA_MCP_API_SKIP_TLS_VERIFY  Skip TLS certificate verification (default: false)
   COLLIBRA_MCP_API_PROXY        HTTP proxy URL for API requests
   HTTP_PROXY                    HTTP proxy URL (alternative to COLLIBRA_MCP_API_PROXY)
@@ -181,6 +203,10 @@ type CollibraApiConfig struct {
 	Url           string `mapstructure:"url"`
 	Username      string `mapstructure:"username"`
 	Password      string `mapstructure:"password"`
+	Cookie        string `mapstructure:"cookie"`
+	SSOAuth       bool   `mapstructure:"sso-auth"`
+	SSOCachePath  string `mapstructure:"sso-cache-path"`
+	SSOTimeout    int    `mapstructure:"sso-timeout"`
 	SkipTLSVerify bool   `mapstructure:"skip-tls-verify"`
 	Proxy         string `mapstructure:"proxy"`
 }
