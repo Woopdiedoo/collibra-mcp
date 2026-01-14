@@ -27,11 +27,7 @@ type SSOAuthResult struct {
 
 // AuthenticateWithSSO opens a browser for the user to authenticate via SSO
 // then prompts them to paste the session cookie.
-func AuthenticateWithSSO(ctx context.Context, collibraURL string, timeout time.Duration) (*SSOAuthResult, error) {
-	if timeout == 0 {
-		timeout = DefaultTimeout
-	}
-
+func AuthenticateWithSSO(_ context.Context, collibraURL string, _ time.Duration) (*SSOAuthResult, error) {
 	slog.Info("Starting SSO authentication...")
 
 	// Open the URL in the default browser (preserves SSO/Intune trust)
