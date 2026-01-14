@@ -49,17 +49,9 @@ func initConfigOptions() {
 	_ = viper.BindEnv("api.url", "COLLIBRA_MCP_API_URL")
 	_ = viper.BindPFlag("api.url", pflag.Lookup("api-url"))
 
-	pflag.String("api-username", "", "Collibra API username (env: COLLIBRA_MCP_API_USR)")
-	_ = viper.BindEnv("api.username", "COLLIBRA_MCP_API_USR")
-	_ = viper.BindPFlag("api.username", pflag.Lookup("api-username"))
-
-	pflag.String("api-password", "", "Collibra API password (env: COLLIBRA_MCP_API_PWD)")
-	_ = viper.BindEnv("api.password", "COLLIBRA_MCP_API_PWD")
-	_ = viper.BindPFlag("api.password", pflag.Lookup("api-password"))
-
-	pflag.String("api-cookie", "", "Session cookie for SSO authentication (env: COLLIBRA_MCP_API_COOKIE)")
+	pflag.String("cookie", "", "Session cookie for SSO authentication (env: COLLIBRA_MCP_API_COOKIE)")
 	_ = viper.BindEnv("api.cookie", "COLLIBRA_MCP_API_COOKIE")
-	_ = viper.BindPFlag("api.cookie", pflag.Lookup("api-cookie"))
+	_ = viper.BindPFlag("api.cookie", pflag.Lookup("cookie"))
 
 	pflag.Bool("sso-auth", false, "Enable browser-based SSO authentication (env: COLLIBRA_MCP_SSO_AUTH)")
 	_ = viper.BindEnv("api.sso-auth", "COLLIBRA_MCP_SSO_AUTH")
@@ -119,20 +111,11 @@ FLAGS:
 	fmt.Fprintf(os.Stderr, `
 ENVIRONMENT VARIABLES:
   COLLIBRA_MCP_API_URL          Collibra API URL
-  COLLIBRA_MCP_API_USR          Collibra API username
-  COLLIBRA_MCP_API_PWD          Collibra API password
-  COLLIBRA_MCP_API_COOKIE       Session cookie for SSO authentication (e.g., JSESSIONID=xxx)
   COLLIBRA_MCP_SSO_AUTH         Enable browser-based SSO authentication (default: false)
   COLLIBRA_MCP_SSO_CACHE_PATH   Path to cache SSO session
   COLLIBRA_MCP_SSO_TIMEOUT      Timeout in seconds for SSO authentication (default: 300)
-  COLLIBRA_MCP_API_SKIP_TLS_VERIFY  Skip TLS certificate verification (default: false)
-  COLLIBRA_MCP_API_PROXY        HTTP proxy URL for API requests
-  HTTP_PROXY                    HTTP proxy URL (alternative to COLLIBRA_MCP_API_PROXY)
-  HTTPS_PROXY                   HTTPS proxy URL (alternative to COLLIBRA_MCP_API_PROXY)
-  COLLIBRA_MCP_MODE             Server mode: 'stdio', 'http', 'http-sse', or 'http-streamable' (default: stdio)
+  COLLIBRA_MCP_MODE             Server mode: 'stdio' or 'http' (default: stdio)
   COLLIBRA_MCP_HTTP_PORT        HTTP server port (default: 8080)
-  COLLIBRA_MCP_ENABLED_TOOLS    Optional comma-separated list of tool names to enable instead of enabling all tools, cannot be used with disabled-tools
-  COLLIBRA_MCP_DISABLED_TOOLS   Optional comma-separated list of tool names to disable while enabling the remaining tools, cannot be used with enabled-tools
 
 CONFIGURATION:
   Configuration can be provided in the following order of precedence: command-line flags (highest), environment variables, or a YAML configuration file (lowest).
@@ -144,20 +127,11 @@ CONFIGURATION:
 CONFIGURATION FILE EXAMPLE:
   api:
     url: "https://your-collibra-instance.com"
-    username: "your-username"
-    password: "your-password"
-    skip-tls-verify: false
-    proxy: "http://proxy.example.com:8080"
+    sso-auth: true
   mcp:
-    mode: "http"  # or "stdio", "http-sse", "http-streamable"
+    mode: "stdio"
     http:
       port: 8080
-    enabled-tools:  # Optional: list of tools to enable (cannot be used with disabled-tools)
-      - "tool1"
-      - "tool2"
-    # disabled-tools:  # Optional: list of tools to disable (cannot be used with enabled-tools)
-    #   - "tool3"
-    #   - "tool4"
 `)
 }
 
@@ -198,17 +172,14 @@ type Config struct {
 	Mcp McpConfig         `mapstructure:"mcp"`
 }
 
-// CollibraConfig holds Collibra-specific configuration
+// CollibraApiConfig holds Collibra-specific configuration
 type CollibraApiConfig struct {
 	Url           string `mapstructure:"url"`
-	Username      string `mapstructure:"username"`
-	Password      string `mapstructure:"password"`
 	Cookie        string `mapstructure:"cookie"`
 	SSOAuth       bool   `mapstructure:"sso-auth"`
 	SSOCachePath  string `mapstructure:"sso-cache-path"`
 	SSOTimeout    int    `mapstructure:"sso-timeout"`
 	SkipTLSVerify bool   `mapstructure:"skip-tls-verify"`
-	Proxy         string `mapstructure:"proxy"`
 }
 
 // ServerConfig holds server configuration

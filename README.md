@@ -2,6 +2,8 @@
 
 A Model Context Protocol (MCP) server that provides AI agents with access to Collibra Data Governance Center capabilities including data asset discovery, business glossary queries, and detailed asset information retrieval.
 
+> **Note:** This is a fork of the original [Collibra MCP Server](https://github.com/collibra/chip) by [Collibra](https://www.collibra.com/), adapted for PGGM's SSO authentication requirements.
+
 ## Overview
 
 This Go-based MCP server acts as a bridge between AI applications and Collibra, enabling intelligent data discovery and governance operations through the following tools:
@@ -24,41 +26,17 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
 ### Prerequisites
 
 - Access to a Collibra Data Governance Center instance
-- Valid Collibra credentials
+- SSO credentials (Azure AD / SAML)
 
 ### Installation
 
-#### Option A: Download Prebuilt Binary (Recommended)
-
-1. **Download the latest release:**
-   - Go to the [GitHub Releases page](../../releases)
-   - Download the appropriate binary for your platform:
-     - `chip-linux-amd64` - Linux (Intel/AMD 64-bit)
-     - `chip-linux-arm64` - Linux (ARM 64-bit)
-     - `chip-mac-amd64` - macOS (Intel)
-     - `chip-mac-arm64` - macOS (Apple Silicon)
-     - `chip-windows-amd64.exe` - Windows (Intel/AMD 64-bit)
-     - `chip-windows-arm64.exe` - Windows (ARM 64-bit)
-
-3. **Optional: Move to your PATH:**
-   ```bash
-   # Linux/macOS
-   sudo mv chip-* /usr/local/bin/mcp-server
-   
-   # Or add to your user bin directory
-   mv chip-* ~/.local/bin/mcp-server
-   ```
-
-#### Option B: Build from Source
-   ```bash
-   git clone <repository-url>
-   cd chip
-   go mod download
-   go build -o .build/chip ./cmd/chip
-
-   # Run the build binary
-   ./.build/chip
-   ```
+Build from source:
+```bash
+git clone https://github.com/Woopdiedoo/collibra-mcp.git
+cd collibra-mcp
+go mod download
+go build -o chip ./cmd/chip
+```
 
 ## Running and Configuration
 
@@ -85,25 +63,51 @@ After initial authentication, the cached session is automatically used:
 
 The session cache is stored at `~/.config/collibra/session_cache.json`.
 
-**For detailed configuration instructions, see [CONFIG.md](docs/CONFIG.md).**
+## VS Code Integration
 
-## Integration with MCP Clients
+### 1. Open MCP Settings
 
-This server is compatible with any MCP client. Refer to your MCP client's documentation for server configuration. 
+Open the Command Palette (`Ctrl+Shift+P`) and search for:
+```
+MCP: Open User Configuration (JSON)
+```
 
-### VS Code / VS Code Insiders
+Or navigate directly to the MCP configuration file:
+- **Windows:** `%APPDATA%\Code\User\mcp.json` (or `Code - Insiders` for Insiders)
+
+### 2. Add Collibra Server Configuration
+
+Add the following to your `mcp.json` file inside the `"servers"` object:
 
 ```json
-// User settings: mcp.json or .vscode/mcp.json
 {
     "servers": {
         "collibra": {
             "type": "stdio",
-            "command": "/path/to/chip",
-            "args": ["--api-url", "https://your-collibra-instance.com"]
+            "command": "C:\\Projects\\MCPs\\chip\\chip.exe",
+            "enabled": true,
+            "args": ["--api-url", "https://pggm.collibra.com"]
         }
     }
 }
 ```
 
-**Note:** For SSO authentication, run the chip binary once manually with `--sso-auth` to cache your session. VS Code will then automatically use the cached session. 
+### 3. Authenticate (First-time only)
+
+Before using the MCP in VS Code, run the chip binary once to cache your SSO session:
+
+```powershell
+cd C:\Projects\MCPs\chip
+.\chip.exe --api-url "https://pggm.collibra.com" --sso-auth
+```
+
+Follow the prompts to complete SSO authentication. After this, VS Code will automatically use the cached session.
+
+### 4. Restart MCP Server
+
+In VS Code, open Command Palette (`Ctrl+Shift+P`) and run:
+```
+MCP: List Servers
+```
+
+Then restart the Collibra server to apply the configuration. 

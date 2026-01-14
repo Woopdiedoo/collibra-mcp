@@ -31,15 +31,11 @@ func main() {
 			slog.Error(fmt.Sprintf("SSO authentication failed: %v", err))
 			os.Exit(1)
 		}
-	} else if config.Api.Cookie == "" && config.Api.Username == "" {
+	} else if config.Api.Cookie == "" {
 		// No auth configured - try to load cached SSO session
 		if err := tryLoadCachedSession(config); err != nil {
 			slog.Debug(fmt.Sprintf("No cached session available: %v", err))
 		}
-	}
-
-	if config.Api.Username != "" && config.Api.Password != "" {
-		slog.Warn("Using a single basic auth header for all requests is not recommended as it will result in all actions being attributed to the same account. Consider setting an appropriate basic auth header for each request.")
 	}
 
 	client := newCollibraClient(config)
