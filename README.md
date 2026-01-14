@@ -42,7 +42,10 @@ go build -o chip ./cmd/chip
 
 ### Authentication
 
-The server uses cookie-based authentication with SSO support:
+The server uses cookie-based authentication with SSO support.
+
+> **Why cookie-based instead of full SSO automation?**  
+> Collibra uses SAML-based SSO, which is designed for browser-based flows and lacks a headless/programmatic grant type like OAuth2's client credentials. Automating SAML would require simulating a browser to handle redirects and form posts. Additionally, corporate environments with Azure AD and Intune device management only trust enrolled browser profiles, blocking automated browser sessions. By using your existing browser and manually copying the session cookie, we work around both limitations.
 
 ```bash
 # First-time setup: authenticate via browser
