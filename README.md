@@ -2,6 +2,8 @@
 
 A Model Context Protocol (MCP) server that provides AI agents with access to Collibra Data Governance Center capabilities including data asset discovery, business glossary queries, and detailed asset information retrieval.
 
+> **Note:** This is a fork of the original [Collibra MCP Server](https://github.com/collibra/chip) by [Collibra](https://www.collibra.com/), adapted for PGGM's SSO authentication requirements.
+
 ## Overview
 
 This Go-based MCP server acts as a bridge between AI applications and Collibra, enabling intelligent data discovery and governance operations through the following tools:
@@ -24,145 +26,88 @@ This Go-based MCP server acts as a bridge between AI applications and Collibra, 
 ### Prerequisites
 
 - Access to a Collibra Data Governance Center instance
-- Valid Collibra credentials
+- SSO credentials (Azure AD / SAML)
 
 ### Installation
 
-#### Option A: Download Prebuilt Binary (Recommended)
-
-1. **Download the latest release:**
-   - Go to the [GitHub Releases page](../../releases)
-   - Download the appropriate binary for your platform:
-     - `chip-linux-amd64` - Linux (Intel/AMD 64-bit)
-     - `chip-linux-arm64` - Linux (ARM 64-bit)
-     - `chip-mac-amd64` - macOS (Intel)
-     - `chip-mac-arm64` - macOS (Apple Silicon)
-     - `chip-windows-amd64.exe` - Windows (Intel/AMD 64-bit)
-     - `chip-windows-arm64.exe` - Windows (ARM 64-bit)
-
-2. **Make the binary executable (Linux/macOS):**
-   ```bash
-   chmod +x chip-*
-   ```
-
-3. **Optional: Move to your PATH:**
-   ```bash
-   # Linux/macOS
-   sudo mv chip-* /usr/local/bin/mcp-server
-   
-   # Or add to your user bin directory
-   mv chip-* ~/.local/bin/mcp-server
-   ```
-
-#### Option B: Build from Source
-   ```bash
-   git clone <repository-url>
-   cd chip
-   go mod download
-   go build -o .build/chip ./cmd/chip
-
-   # Run the build binary
-   ./.build/chip
-   ```
+Build from source:
+```bash
+git clone https://github.com/Woopdiedoo/collibra-mcp.git
+cd collibra-mcp
+go mod download
+go build -o chip ./cmd/chip
+```
 
 ## Running and Configuration
 
-### Authentication Options
+### Authentication
 
-The server supports two authentication approaches, either configured through environment variables or a configuration file
-
-#### Option 1: Server-wide Authentication
-When running over the stdio transport, configure credentials at the server level - all requests use the same credentials:
+The server uses cookie-based authentication with SSO support:
 
 ```bash
-mkdir -p ~/.config/collibra/
+# First-time setup: authenticate via browser
+./chip --api-url "https://your-collibra-instance.com" --sso-auth
 ```
 
-Powershell:
-```powershell
-New-Item -ItemType File -Path $HOME\.config\collibra\mcp.yaml
-```
+This will:
+1. Open your default browser to the Collibra login page
+2. Allow you to complete SSO authentication
+3. Prompt you to paste the session cookie from browser DevTools
+4. Cache the session for future use
 
-bash/zsh:
+After initial authentication, the cached session is automatically used:
 ```bash
-touch ~/.config/collibra/mcp.yaml
+# Subsequent runs use cached session automatically
+./chip --api-url "https://your-collibra-instance.com"
 ```
 
+The session cache is stored at `~/.config/collibra/session_cache.json`.
 
-```yaml
-# ~/.config/collibra/mcp.yaml
-api:
-  url: "https://your-collibra-instance.com"
-  username: "your-username"
-  password: "your-password"
+## VS Code Integration
+
+### 1. Open MCP Settings
+
+Open the Command Palette (`Ctrl+Shift+P`) and search for:
+```
+MCP: Open User Configuration (JSON)
 ```
 
-The same options can be configured through the respective environment variables COLLIBRA_MCP_API_URL, COLLIBRA_MCP_API_USR and COLLIBRA_MCP_API_PWD.
+Or navigate directly to the MCP configuration file:
+- **Windows:** `%APPDATA%\Code\User\mcp.json` (or `Code - Insiders` for Insiders)
 
-#### Option 2: Client-provided Authentication
-When running over the http transport, it is recommended that MCP clients provide their own Basic Auth headers for each request:
-```bash
-export COLLIBRA_MCP_API_URL="https://your-collibra-instance.com"
-./mcp-server
-```
+### 2. Add Collibra Server Configuration
 
-**For detailed configuration instructions, see [CONFIG.md](docs/CONFIG.md).**
+Add the following to your `mcp.json` file inside the `"servers"` object:
 
-## Security Considerations
-
-- 🔐 **Credentials**: Store sensitive information in environment variables rather than config files
-- 🌐 **Network**: HTTP mode binds to localhost only for security
-- 🔒 **TLS**: Only use `skip-tls-verify: true` for development with self-signed certificates
-- 📁 **File Permissions**: Ensure config files have appropriate permissions when containing credentials
-
-## Integration with MCP Clients
-
-This server is compatible with any MCP client. Refer to your MCP client's documentation for server configuration. 
-
-Here's how to integrate with some popular clients assuming you have a configuration file setup:
-
-* Claude desktop
 ```json
-// ~/Library/Application Support/Claude/claude_desktop_config.json
-{
-  "mcpServers": {
-    "collibra": {
-      "type": "stdio",
-      "command": "/path/to/chip-..."
-    }
-  }
-}
-```
-
-* VS Code
-```json
-// .vscode/mcp.json
 {
     "servers": {
         "collibra": {
             "type": "stdio",
-            "command": "./chip"
+            "command": "C:\\Projects\\MCPs\\chip\\chip.exe",
+            "enabled": true,
+            "args": ["--api-url", "https://pggm.collibra.com"]
         }
     }
 }
 ```
 
-* Gemini-cli
-```json
-// ~/.gemini/settings.json
-{
-  "mcpServers": {
-    "collibra": {
-      "command": "/path/to/chip-..."
-    }
-  }
-}
+### 3. Authenticate (First-time only)
+
+Before using the MCP in VS Code, run the chip binary once to cache your SSO session:
+
+```powershell
+cd C:\Projects\MCPs\chip
+.\chip.exe --api-url "https://pggm.collibra.com" --sso-auth
 ```
 
-## Enabling or disabling specific tools
+Follow the prompts to complete SSO authentication. After this, VS Code will automatically use the cached session.
 
-You can enable or disable specific tools by passing command line parameters, setting environment variables, or customizing the `mcp.yaml` configuration file.
-You can specify tools to enable or disable by using the tool names listed above (e.g. `asset_details_get`).  For more information, see the [CONFIG.md](docs/CONFIG.md) documentation.
+### 4. Restart MCP Server
 
-By default, all tools are enabled. Specifying tools to be enabled will enable *only* those tools.  Disabling tools will disable *only* those tools and leave all others enabled.
-At present, enabling and disabling at the same time is not supported. 
+In VS Code, open Command Palette (`Ctrl+Shift+P`) and run:
+```
+MCP: List Servers
+```
+
+Then restart the Collibra server to apply the configuration. 

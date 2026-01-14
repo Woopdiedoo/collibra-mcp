@@ -8,7 +8,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
 	"time"
 
@@ -39,16 +38,6 @@ func newCollibraClient(config *Config) *http.Client {
 		baseTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: config.Api.SkipTLSVerify}
 	}
 
-	if config.Api.Proxy != "" {
-		proxyURL, err := url.Parse(config.Api.Proxy)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Invalid proxy URL: %s", err))
-			os.Exit(1)
-		}
-		slog.Info(fmt.Sprintf("Using proxy URL: %s", proxyURL))
-		baseTransport.Proxy = http.ProxyURL(proxyURL)
-	}
-
 	return &http.Client{
 		Transport: &collibraClient{
 			config: config,
@@ -70,8 +59,8 @@ func (c *collibraClient) RoundTrip(request *http.Request) (*http.Response, error
 	if !ok {
 		return nil, fmt.Errorf("toolRequest not found in ctx")
 	}
-	if c.config.Api.Username != "" && c.config.Api.Password != "" {
-		reqClone.SetBasicAuth(c.config.Api.Username, c.config.Api.Password)
+	if c.config.Api.Cookie != "" {
+		reqClone.Header.Set("Cookie", c.config.Api.Cookie)
 	} else {
 		copyHeader(toolRequest, reqClone, "Authorization")
 	}

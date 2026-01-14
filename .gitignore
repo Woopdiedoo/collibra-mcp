@@ -6,3 +6,5 @@ build
 .vscode
 mcp.yaml
 oas/**
+
+chip.exe
