@@ -50,7 +50,7 @@ The server uses cookie-based authentication with SSO support.
 
 ```bash
 # First-time setup: authenticate via browser
-./chip --api-url "https://your-collibra-instance.com" --sso-auth
+./chip --api-url "https://pggm.collibra.com" --sso-auth
 ```
 
 This will:
@@ -71,7 +71,7 @@ After logging in to Collibra in your browser:
 After initial authentication, the cached session is automatically used:
 ```bash
 # Subsequent runs use cached session automatically
-./chip --api-url "https://your-collibra-instance.com"
+./chip --api-url "https://pggm.collibra.com"
 ```
 
 The session cache is stored at `~/.config/collibra/session_cache.json`.

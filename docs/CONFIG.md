@@ -9,7 +9,7 @@ The Collibra MCP Server uses cookie-based SSO authentication.
 Run the server with the `--sso-auth` flag to authenticate:
 
 ```bash
-./chip --api-url "https://your-collibra-instance.com" --sso-auth
+./chip --api-url "https://pggm.collibra.com" --sso-auth
 ```
 
 This will:
@@ -23,7 +23,7 @@ This will:
 After initial authentication, the cached session is automatically used:
 
 ```bash
-./chip --api-url "https://your-collibra-instance.com"
+./chip --api-url "https://pggm.collibra.com" --sso-auth
 ```
 
 ## Command Line Options

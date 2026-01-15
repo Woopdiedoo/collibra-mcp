@@ -126,7 +126,7 @@ CONFIGURATION:
 
 CONFIGURATION FILE EXAMPLE:
   api:
-    url: "https://your-collibra-instance.com"
+    url: "https://pggm.collibra.com"
     sso-auth: true
   mcp:
     mode: "stdio"
