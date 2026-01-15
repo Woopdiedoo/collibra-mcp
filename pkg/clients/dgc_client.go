@@ -195,6 +195,28 @@ func executeRequest(client *http.Client, req *http.Request) ([]byte, error) {
 	}
 
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		// Provide helpful error messages for authentication failures
+		if response.StatusCode == 401 || response.StatusCode == 403 {
+			return nil, fmt.Errorf(`AUTHENTICATION ERROR (HTTP %d)
+
+The request to Collibra failed due to missing or invalid authentication.
+
+HOW TO FIX THIS:
+================
+1. The user needs to restart the Collibra MCP server with SSO authentication enabled
+2. Run the server with: chip --sso (or set "ssoAuth": true in config)
+3. A browser will open - log in with corporate SSO credentials
+4. After login, open Developer Tools (F12) → Application → Cookies
+5. Copy the JSESSIONID cookie value and paste it in the terminal
+
+ALTERNATIVE: If the user has a valid JSESSIONID cookie, they can set it via:
+- Environment variable: CHIP_API_COOKIE="JSESSIONID=<value>"
+- Config file: "cookie": "JSESSIONID=<value>"
+
+You can also call the 'auth_help' tool to get detailed authentication instructions.
+
+Original error: %s`, response.StatusCode, string(responseBody))
+		}
 		return nil, fmt.Errorf("HTTP %d: %s", response.StatusCode, string(responseBody))
 	}
 

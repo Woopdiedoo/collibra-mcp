@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterAll(server *chip.Server, client *http.Client, toolConfig *chip.ToolConfig) {
+	toolRegister(server, toolConfig, NewAuthHelpTool(client))
 	toolRegister(server, toolConfig, NewAskDadTool(client))
 	toolRegister(server, toolConfig, NewAskGlossaryTool(client))
 	toolRegister(server, toolConfig, NewAssetDetailsTool(client))

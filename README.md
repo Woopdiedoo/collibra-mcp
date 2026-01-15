@@ -99,7 +99,7 @@ Add the following to your `mcp.json` file inside the `"servers"` object:
             "type": "stdio",
             "command": "<path-to-chip>/chip.exe",
             "enabled": true,
-            "args": ["--api-url", "https://pggm.collibra.com"]
+            "args": ["--api-url", "https://pggm.collibra.com", "--sso-auth"]
         }
     }
 }
