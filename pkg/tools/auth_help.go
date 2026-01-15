@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/collibra/chip/pkg/chip"
 )
@@ -39,6 +40,12 @@ func handleAuthHelp() chip.ToolHandlerFunc[AuthHelpInput, AuthHelpOutput] {
 			collibraHost = "https://pggm.collibra.com"
 		}
 
+		// Get the path to the currently running chip executable
+		execPath, err := os.Executable()
+		if err != nil {
+			execPath = "chip" // Fallback to assuming it's in PATH
+		}
+
 		instructions := fmt.Sprintf(`AUTHENTICATION REQUIRED - AI AGENT INSTRUCTIONS
 ================================================
 
@@ -49,7 +56,7 @@ STEP 1: RUN THE AUTHENTICATION COMMAND
 --------------------------------------
 Use your run_in_terminal tool to execute this command as a BACKGROUND process (isBackground=true):
 
-    chip --api-url "%s" --sso-auth
+    %s --api-url "%s" --sso-auth
 
 IMPORTANT: You MUST set isBackground=true so you don't get stuck waiting for the terminal.
 
@@ -71,14 +78,8 @@ STEP 3: WAIT FOR USER CONFIRMATION
 Wait for the user to confirm they have completed authentication before retrying any Collibra operations.
 The session will be cached automatically for future use.
 
-ALTERNATIVE: If chip is not in PATH
------------------------------------
-If the chip command is not found, the user may need to:
-- Install chip globally, OR
-- Run it from the source: go run github.com/collibra/chip/cmd/chip@latest --api-url "%s" --sso-auth
-
 DO NOT just display these instructions to the user - YOU must run the terminal command yourself!
-`, collibraHost, collibraHost, collibraHost)
+`, execPath, collibraHost, collibraHost)
 
 		return AuthHelpOutput{
 			Instructions: instructions,
