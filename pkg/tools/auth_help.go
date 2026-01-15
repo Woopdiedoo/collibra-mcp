@@ -39,51 +39,46 @@ func handleAuthHelp() chip.ToolHandlerFunc[AuthHelpInput, AuthHelpOutput] {
 			collibraHost = "https://pggm.collibra.com"
 		}
 
-		instructions := fmt.Sprintf(`AUTHENTICATION INSTRUCTIONS FOR COLLIBRA MCP SERVER
+		instructions := fmt.Sprintf(`AUTHENTICATION REQUIRED - AI AGENT INSTRUCTIONS
 ================================================
 
-The Collibra MCP server uses browser-based SSO authentication. Here's how to authenticate:
+You (the AI agent) must perform the following steps to authenticate with Collibra.
+Do NOT just tell the user these instructions - YOU must execute them.
 
-STEP 1: RESTART THE MCP SERVER WITH SSO FLAG
---------------------------------------------
-The user needs to restart the Collibra MCP server with the --sso flag enabled.
-This can be done by:
-- Adding "ssoAuth": true to their chip configuration file, OR
-- Running the server with: chip --sso
+STEP 1: RUN THE AUTHENTICATION COMMAND
+--------------------------------------
+Use your run_in_terminal tool to execute this command as a BACKGROUND process (isBackground=true):
 
-STEP 2: FOLLOW THE BROWSER AUTHENTICATION FLOW
-----------------------------------------------
-When the server starts with SSO enabled:
-1. A browser window will automatically open to: %s
-2. The user should log in using their corporate SSO credentials (e.g., Okta, Azure AD, etc.)
-3. Once logged in, the user needs to:
-   a. Press F12 to open Developer Tools
-   b. Go to: Application → Cookies → %s
-   c. Find the 'JSESSIONID' cookie and copy its Value
-   d. Paste the cookie value in the terminal where the MCP server is running
+    chip --api-url "%s" --sso-auth
 
-STEP 3: SESSION CACHING
------------------------
-After successful authentication:
-- The session is cached locally for future use
-- Subsequent MCP server starts will use the cached session automatically
-- Sessions typically expire after 30 minutes of inactivity
+IMPORTANT: You MUST set isBackground=true so you don't get stuck waiting for the terminal.
 
-ALTERNATIVE: DIRECT COOKIE CONFIGURATION
-----------------------------------------
-If the user already has a valid JSESSIONID cookie, they can configure it directly:
-- Set CHIP_API_COOKIE environment variable: CHIP_API_COOKIE="JSESSIONID=<cookie_value>"
-- Or add to configuration file: "cookie": "JSESSIONID=<cookie_value>"
+STEP 2: TELL THE USER WHAT TO DO
+--------------------------------
+After running the command, immediately tell the user:
 
-TROUBLESHOOTING
----------------
-- If authentication keeps failing, the cached session may have expired
-- Delete the session cache file and restart with --sso to re-authenticate
-- Session cache is typically stored at: ~/.chip/session_cache.json
+"I've opened your browser for Collibra authentication. Please:
+1. Log in to Collibra in the browser window that just opened
+2. Once logged in, press F12 to open Developer Tools
+3. Go to: Application → Cookies → %s
+4. Find the 'JSESSIONID' cookie and copy its Value
+5. Click on the terminal in VS Code and paste the cookie value, then press Enter
 
-TELL THE USER:
-"To authenticate with Collibra, please restart the MCP server with SSO enabled (use --sso flag or set ssoAuth: true in config). A browser will open for you to log in, then follow the prompts to complete authentication."
-`, collibraHost, collibraHost)
+Let me know once you've completed this and I'll retry the search!"
+
+STEP 3: WAIT FOR USER CONFIRMATION
+----------------------------------
+Wait for the user to confirm they have completed authentication before retrying any Collibra operations.
+The session will be cached automatically for future use.
+
+ALTERNATIVE: If chip is not in PATH
+-----------------------------------
+If the chip command is not found, the user may need to:
+- Install chip globally, OR
+- Run it from the source: go run github.com/collibra/chip/cmd/chip@latest --api-url "%s" --sso-auth
+
+DO NOT just display these instructions to the user - YOU must run the terminal command yourself!
+`, collibraHost, collibraHost, collibraHost)
 
 		return AuthHelpOutput{
 			Instructions: instructions,
